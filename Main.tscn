@@ -7,17 +7,6 @@
 [node name="Main" type="Node"]
 script = ExtResource( 1 )
 
-[node name="ColorRect" type="ColorRect" parent="."]
-anchor_left = 0.00017554
-anchor_right = 0.00017554
-margin_left = 1.78186
-margin_right = 1921.78
-margin_bottom = 1080.0
-color = Color( 0.133333, 0.133333, 0.133333, 1 )
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
 [node name="ArenaCoder" parent="." instance=ExtResource( 2 )]
 script = null
 

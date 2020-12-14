@@ -1,3 +1,65 @@
-[gd_scene format=2]
+[gd_scene load_steps=4 format=2]
 
-[node name="Arena" type="Node2D"]
+[ext_resource path="res://dataCode/ViewMain.cs" type="Script" id=2]
+[ext_resource path="res://dataFile/2D assets/Ladrilhos/Retas/13.png" type="Texture" id=3]
+[ext_resource path="res://dataFile/2D assets/Outros/Fundo_branco.png" type="Texture" id=6]
+
+[node name="Arena" type="Node"]
+
+[node name="Editor" type="Node2D" parent="."]
+
+[node name="ColorRect" type="ColorRect" parent="Editor"]
+margin_top = -1080.0
+margin_right = 3840.0
+margin_bottom = 1080.0
+color = Color( 0.133333, 0.133333, 0.133333, 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="teste3" type="Sprite" parent="Editor"]
+position = Vector2( 1308.35, 142.414 )
+scale = Vector2( 0.8, 0.8 )
+texture = ExtResource( 6 )
+
+[node name="Sprite" type="Sprite" parent="Editor/teste3"]
+texture = ExtResource( 3 )
+
+[node name="teste5" type="Sprite" parent="Editor"]
+position = Vector2( 114.388, -970.684 )
+scale = Vector2( 0.8, 0.8 )
+texture = ExtResource( 6 )
+
+[node name="Sprite" type="Sprite" parent="Editor/teste5"]
+texture = ExtResource( 3 )
+
+[node name="teste4" type="Sprite" parent="Editor"]
+position = Vector2( 1294.08, -466.46 )
+scale = Vector2( 0.8, 0.8 )
+texture = ExtResource( 6 )
+
+[node name="Sprite" type="Sprite" parent="Editor/teste4"]
+texture = ExtResource( 3 )
+
+[node name="ViewMain" type="Node2D" parent="."]
+script = ExtResource( 2 )
+speed = 25
+
+[node name="Menu" type="Control" parent="ViewMain"]
+margin_right = 120.0
+margin_bottom = 1080.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="ColorRect" type="ColorRect" parent="ViewMain/Menu"]
+margin_right = 120.0
+margin_bottom = 1080.0
+color = Color( 0.0588235, 0.0588235, 0.0588235, 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Camera" type="Camera2D" parent="ViewMain"]
+position = Vector2( 960, 540 )
+current = true
