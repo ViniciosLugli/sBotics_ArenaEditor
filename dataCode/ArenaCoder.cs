@@ -2,18 +2,35 @@ using Godot;
 using System.Collections.Generic;
 using System;
 
+public class Tile{
+	public short x { get; set; }
+	public short y { get; set; }
+	public short degrees { get; set; }
+	public string type { get; set; }
+	public short id{ get; set; }
+	public Tile(short x, short y, short degrees, string type, short id){
+		this.x = x;
+		this.y = y;
+		this.degrees = degrees;
+		this.type = type;
+		this.id = id;
+	}
+}
+
 public class CleitonCoders{
-	private static string Reverse(string s){
+	public static string reverse(string s){
 		char[] arr = s.ToCharArray();
 		Array.Reverse(arr);
 		return new string(arr);
 	}
-	private string[] filter_code(string native_code){
-		string[] final_code = (native_code.Replace("\n", "").Replace("\r", "").Replace("\b", "").Replace("\t", "")).Split(new char[] { ',' });
+
+	public string[] filter(string native_code){
+		string[] final_code = (native_code.Replace(" ", "").Replace("\n", "").Replace("\r", "").Replace("\b", "").Replace("\t", "")).Split(new char[] { ',' });
 		GD.Print($"Codes array: {string.Join(", ", final_code)}");
 		return final_code;
 	}
-	private int GetIndex(string c) {
+
+	public int GetIndex(string c) {
 		Dictionary<string, int> BaseDecoder = this.tileDictionary();
 		int result = 777;
 		try{
@@ -23,7 +40,8 @@ public class CleitonCoders{
 		}
 		return result;
 	}
-	public string GetStraight(int index){
+
+	public string getStraight(int index){
 		Dictionary<int, string> BaseDecoder = this.straightTileDictionary();
 		string result = "Penis";
 		try{
@@ -34,7 +52,7 @@ public class CleitonCoders{
 		return result;
 	}
 
-	public string GetCurved(int index){
+	public string getCurved(int index){
 		Dictionary<int, string> BaseDecoder = this.curvedTileDictionary();
 		string result = "sim!";
 		try{
@@ -44,26 +62,19 @@ public class CleitonCoders{
 		}
 		return result;
 	}
-	public void decoder(string inter_code){
-		string[] final_code = filter_code(inter_code);
-		foreach (string code in final_code){
-			byte pos_x = byte.Parse(Reverse(code.Substring(0, 2)));
-			byte pos_y = byte.Parse(Reverse(code.Substring(2, 2)));
-			short direction = short.Parse(code.Substring(6, 3));
-			string compl0 = code.Substring(4, 1);
-			int compl1 = GetIndex(code.Substring(5, 1));
-			direction = (direction != 0 && direction != 90 && direction != 180 && direction != 270) ? (short)0 : direction;
-			GD.Print($"For code: '{code}' -> position: <{pos_x}, {pos_y}> | direction: {direction} | complement: <{compl0}, {compl1}>");
-			if(compl0.ToLower() == "r"){
-				GD.Print(GetStraight(compl1));
-			}
-			else if(compl0.ToLower() == "c"){
-				GD.Print(GetCurved(compl1));
-			}
-		}
+
+	public Tile decode(string code){
+		short pos_x = byte.Parse(reverse(code.Substring(0, 2)));
+		short pos_y = byte.Parse(reverse(code.Substring(2, 2)));
+		short direction = short.Parse(code.Substring(6, 3));
+		string compl0 = code.Substring(4, 1);
+		short compl1 = (short)GetIndex(code.Substring(5, 1));
+		direction = (direction != 0 && direction != 90 && direction != 180 && direction != 270) ? (short)0 : direction;
+		GD.Print($"For code: '{code}' -> position: <{pos_x}, {pos_y}> | direction: {direction} | complement: <{compl0}, {compl1}>");
+		return new Tile(pos_x, pos_y, direction, compl0, compl1);
 	}
 
-	public void encoder(){
+	public void encode(){
 	}
 
 	private Dictionary<string, int> tileDictionary(){
@@ -298,12 +309,50 @@ public class CleitonCoders{
 	}
 }
 
-public class ArenaCoder : Node {
+public class ArenaCoder : Node2D {
+
+	[Export] public string manual_arena = "";
+
+	private PackedScene TileBase_scene = (PackedScene)ResourceLoader.Load("res://dataScenes/TileBase.tscn");
 	public CleitonCoders coder = new CleitonCoders();
 
-	public override void _Ready(){
-		coder.decoder("0000r0000,0010c0000");
+	public Vector2 getTilePos(byte tile_x, byte tile_y){
+		return new Vector2( (short)(448+ (tile_x*256)), (short)(632 - (tile_y*256)));
 	}
+
+	public Texture loadTile(string type, short id){
+		if(type.ToLower() == "r"){
+			return (Texture)ResourceLoader.Load($"res://dataFile/2D assets/Ladrilhos/Retas/{id}.png");
+		}else if(type.ToLower() == "c"){
+			return (Texture)ResourceLoader.Load($"res://dataFile/2D assets/Ladrilhos/Curvas/{id}.png");
+		}return (Texture)ResourceLoader.Load($"res://dataFile/2D assets/Outros/Fundo_branco.png");
+	}
+
+	public void setArena(string arena_code){
+		string[] final_code = coder.filter(arena_code);
+		Tile TempTile;
+		foreach (string code in final_code){
+			TempTile = coder.decode(code);
+			Sprite CurrentChild = (Sprite)TileBase_scene.Instance();
+			CurrentChild.GetNode<Sprite>("TileBase").Texture = loadTile(TempTile.type, TempTile.id);
+			//alias
+			/*if (TempTile.id == 73){
+				
+			}*/
+			//
+			CurrentChild.Position = getTilePos((byte)TempTile.x, (byte)TempTile.y);
+			CurrentChild.RotationDegrees = TempTile.degrees;
+			//GD.Print($"Added child in: { getTilePos((byte)TempTile.x, (byte)TempTile.y)}");
+			AddChild(CurrentChild);
+		}
+	}
+
+	public override void _Ready(){
+		if(manual_arena != ""){
+			setArena(manual_arena);
+		}
+	}
+
 	public override void _Process(float delta){
 
 	}

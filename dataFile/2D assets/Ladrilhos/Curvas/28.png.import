@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/ 28.png-70e5f9bf86e6dcae41aa3c9aded46ad3.stex"
+path="res://.import/28.png-3fe02fcaee8a13c9b07d3326018f82d2.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://dataFile/2D assets/Ladrilhos/Curvas/ 28.png"
-dest_files=[ "res://.import/ 28.png-70e5f9bf86e6dcae41aa3c9aded46ad3.stex" ]
+source_file="res://dataFile/2D assets/Ladrilhos/Curvas/28.png"
+dest_files=[ "res://.import/28.png-3fe02fcaee8a13c9b07d3326018f82d2.stex" ]
 
 [params]
 
