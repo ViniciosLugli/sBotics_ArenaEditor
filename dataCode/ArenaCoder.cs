@@ -64,11 +64,23 @@ public class CleitonCoders{
 	}
 
 	public Tile decode(string code){
-		short pos_x = byte.Parse(reverse(code.Substring(0, 2)));
-		short pos_y = byte.Parse(reverse(code.Substring(2, 2)));
-		short direction = short.Parse(code.Substring(6, 3));
-		string compl0 = code.Substring(4, 1);
-		short compl1 = (short)GetIndex(code.Substring(5, 1));
+		short pos_x = 0;
+		short pos_y = 0;
+		short direction = 0;
+		string compl0 = "r";
+		short compl1 = 0;
+		try
+		{
+			pos_x = byte.Parse(reverse(code.Substring(0, 2)));
+			pos_y = byte.Parse(reverse(code.Substring(2, 2)));
+			direction = short.Parse(code.Substring(6, 3));
+			compl0 = code.Substring(4, 1);
+			compl1 = (short)GetIndex(code.Substring(5, 1));
+		}catch{
+			GD.Print($"The code: {code} is not a tile code! Returning emply tile");
+			return new Tile(0, 0, 0, "r", 71);
+		}
+
 		direction = (direction != 0 && direction != 90 && direction != 180 && direction != 270) ? (short)0 : direction;
 		GD.Print($"For code: '{code}' -> position: <{pos_x}, {pos_y}> | direction: {direction} | complement: <{compl0}, {compl1}>");
 		return new Tile(pos_x, pos_y, direction, compl0, compl1);
@@ -166,8 +178,7 @@ public class CleitonCoders{
 		};
 	}
 	public Dictionary<int, string> straightTileDictionary(){
-		return new Dictionary<int, string>
-		{
+		return new Dictionary<int, string>{
 			{993, "<b>======== Especiais ========</b>"},
 			{75, "Ladrilho de início"},
 			{77, "Ladrilho de início com paredes"},
@@ -261,10 +272,8 @@ public class CleitonCoders{
 			}
 		};
 	}
-	public Dictionary<int, string> curvedTileDictionary()
-	{
-		return new Dictionary<int, string>
-		{
+	public Dictionary<int, string> curvedTileDictionary(){
+		return new Dictionary<int, string>{
 			{993, "<b>======== Especiais ========</b>"},
 			{22, "Ladrilho Vazio"},
 			{999, "<b>======== Sem pontuação ========</b>"},
@@ -316,7 +325,69 @@ public class ArenaCoder : Node2D {
 	private PackedScene TileBase_scene = (PackedScene)ResourceLoader.Load("res://dataScenes/TileBase.tscn");
 	public CleitonCoders coder = new CleitonCoders();
 
+	//Geral
+	//
+
+	//Arena settings:
+	bool BoolEndCd = false; //FINALIZAR ROTINA NO FIM DO CÓDIGO
+	bool BoolNoPos = false; //ALTERAR POSIÇÃO EM ROTINA
+	bool BoolPrgso = false; //FALHA DE PROGRESSO
+	bool BoolShowM = false; //EXIBIR MARCADORES DE ARENA
+	bool BoolSlnha = false; //NECESSIDADE DE SEGUIR LINHA
+	bool BoolTSala = false; //TIPO TRIANGULO: QUALQUER NUMERO DIFERENTE DE 2 É TRIANGULO NIVEL 1
+	bool BoolTpFim = false; //FINALIZAR ROTINA NO FIM DO TEMPO
+	string Descricao = "Arena modificada pelo editor de arenas externo do sBotics :)"; //DESCRIÇÃO DA ARENA
+	string[] HoraDoDia = {"12","00"}; //HORARIO DA ARENA
+	string[] MarcadorF; //MARCADOR FALHAS
+	string[] MarcadorP; //MARCADOR NORMAL
+	bool MoveObsto = false; //PERMISSÃO DE MOVER OBSTÁCULO SEM FALHA
+	short ObstacTmp = 30; //TEMPO DE OBSTÁCULO EM SEGUNDOS
+	bool PontoDist = false; //PONTUAÇÃO CONSIDERA DISTÂNCIA
+	short ResgtePos = 1; //ÁREA DE RESGATE: 0 = SEM, 1 = ALEATORIO, 2 FRENTE, 3 = FRONTAL DIREITA, 4 = DIREITA
+	string RobosPerm = "111111"; //PERMISSÕES DE USO DO ROBO NA ARENA, SEGUINDO A ORDEM: Robo1, Robo2, Robo3, Robo4, Robo5, RoboCustomizado
+	short SaveMrcds = 0; //NUMERO DE MARCADORES
+	short TempoMxmo = 3; // TEMPO MAXIMO:0 = 1m, 1 = 2m, 3 = 5m, 4 = 8m, 5 = 10m, 6 = 1440m ("SEM TEMPO LIMITE")
+	bool VitmaPnts = false; //PONTUAÇÃO PONDERADA
+	string[] VelaAcesa; //POSIÇÃO OBJETO VELA ACESA
+	string[] VelaApgda; //POSIÇÃO OBJETO VELA APAGADA
+	string[] VitimOrta; //POSIÇÃO OBJETO VITIMA MORTA MANUAL
+	string[] VitimViva; //POSIÇÃO OBJETO VITIMA VIVA MANUAL
+	short VtmsMrtas = 2; //QUANTIDADE VÍTIMAS MORTAS (< 10 && > 0)
+	short VtmsVivas = 1; //QUANTIDADE VÍTIMAS VIVAS(< 10 && > 0)
+	string[] prfsrCubo; //POSIÇÃO OBJETO CUBO/PARALELEPIPEDO
+	//
+
+	//Arena code add
+	string additional = "";
+	//
+
+	public void updateInfoMenu(){
+		string output = "";
+		output += $"BoolEndCd: {BoolEndCd.ToString()}\n";
+		output += $"BoolNoPos: {BoolNoPos.ToString()}\n";
+		output += $"BoolPrgso: {BoolPrgso.ToString()}\n";
+		output += $"BoolShowM: {BoolShowM.ToString()}\n";
+		output += $"BoolSlnha: {BoolSlnha.ToString()}\n";
+		output += $"BoolTSala: {BoolTSala.ToString()}\n";
+		output += $"BoolTpFim: {BoolTpFim.ToString()}\n";
+		output += $"Descricao: {Descricao}\n";
+		output += $"HoraDoDia: {HoraDoDia[0]}:{HoraDoDia[1]}\n";
+		output += $"MoveObsto: {MoveObsto.ToString()}\n";
+		output += $"ObstacTmp: {ObstacTmp}\n";
+		output += $"PontoDist: {PontoDist.ToString()}\n";
+		output += $"ResgtePos: {ResgtePos}\n";
+		output += $"RobosPerm: {RobosPerm}\n";
+		output += $"SaveMrcds: {SaveMrcds}\n";
+		output += $"TempoMxmo: {TempoMxmo}\n";
+		output += $"VitmaPnts: {VitmaPnts}\n";
+		output += $"VtmsMrtas: {VtmsMrtas}\n";
+		output += $"VtmsVivas: {VtmsVivas}\n";
+		GetParent().GetNode("ViewMain").GetNode("Menu").GetNode<Label>("Infos").Text = output;
+	}
+
 	public Vector2 getTilePos(byte tile_x, byte tile_y){
+		tile_x = (byte)((tile_x > 9) ? ((tile_x < 0) ? 0 : tile_x) : tile_x);
+		tile_y = (byte)((tile_y > 9) ? ((tile_y < 0) ? 0 : tile_y) : tile_y);
 		return new Vector2( (short)(448+ (tile_x*256)), (short)(632 - (tile_y*256)));
 	}
 
@@ -328,28 +399,249 @@ public class ArenaCoder : Node2D {
 		}return (Texture)ResourceLoader.Load($"res://dataFile/2D assets/Outros/Fundo_branco.png");
 	}
 
-	public void setArena(string arena_code){
+	public void regenerateArena(string arena_code){
 		string[] final_code = coder.filter(arena_code);
 		Tile TempTile;
 		foreach (string code in final_code){
-			TempTile = coder.decode(code);
-			Sprite CurrentChild = (Sprite)TileBase_scene.Instance();
-			CurrentChild.GetNode<Sprite>("TileBase").Texture = loadTile(TempTile.type, TempTile.id);
-			//alias
-			/*if (TempTile.id == 73){
-				
-			}*/
-			//
-			CurrentChild.Position = getTilePos((byte)TempTile.x, (byte)TempTile.y);
-			CurrentChild.RotationDegrees = TempTile.degrees;
-			//GD.Print($"Added child in: { getTilePos((byte)TempTile.x, (byte)TempTile.y)}");
-			AddChild(CurrentChild);
+			if(code.Length == 9){//Normal tile
+				TempTile = coder.decode(code);
+				Sprite CurrentChild = (Sprite)TileBase_scene.Instance();
+				CurrentChild.GetNode<Sprite>("TileBase").Texture = loadTile(TempTile.type, TempTile.id);
+				CurrentChild.Position = getTilePos((byte)TempTile.x, (byte)TempTile.y);
+				CurrentChild.RotationDegrees = TempTile.degrees;
+				//GD.Print($"Added child in: { getTilePos((byte)TempTile.x, (byte)TempTile.y)}");
+				AddChild(CurrentChild);
+			}else if(code.Length > 9){//Probaly config code
+				try{
+					switch (code.Substring(0, 10)){
+						case "BoolEndCd:":
+							if(code.Substring(10) == "false"){
+								BoolEndCd = false;
+								break;
+							}
+							BoolEndCd = true;
+							break;
+						case "BoolNoPos:":
+							if(code.Substring(10) == "false"){
+								BoolNoPos = false;
+								break;
+							}
+							BoolNoPos = true;
+							break;
+						case "BoolPrgso:":
+							if(code.Substring(10) == "false"){
+								BoolPrgso = false;
+								break;
+							}
+							BoolPrgso = true;
+							break;
+						case "BoolShowM:":
+							if(code.Substring(10) == "false"){
+								BoolShowM = false;
+								break;
+							}
+							BoolShowM = true;
+							break;
+						case "BoolSlnha:":
+							if(code.Substring(10) == "false"){
+								BoolSlnha = false;
+								break;
+							}
+							BoolSlnha = true;
+							break;
+						case "BoolTSala:":
+							BoolTSala = code.Substring(10) == "2";
+							break;
+						case "BoolTpFim:":
+							if(code.Substring(10) == "false"){
+								BoolTpFim = false;
+								break;
+							}
+							BoolTpFim = true;
+							break;
+						case "Descricao:":
+							Descricao = code.Substring(10);
+							break;
+						case "HoraDoDia:":
+						  string[] HorarioArray = code.Substring(10).Split(':');
+							if (code.Substring(10) == HorarioArray[0]){
+								HoraDoDia = new string[]{"12", "00"};
+								break;
+							}
+							HoraDoDia = HorarioArray;
+							break;
+						case "Imagem001:":
+							additional += $",{code}";
+							break;
+						case "Imagem021:":
+							additional += $",{code}";
+							break;
+						case "Imagem022:":
+							additional += $",{code}";
+							break;
+						case "Imagem023:":
+							additional += $",{code}";
+							break;
+						case "Imagem024:":
+							additional += $",{code}";
+							break;
+						case "Imagem031:":
+							additional += $",{code}";
+							break;
+						case "Imagem032:":
+							additional += $",{code}";
+							break;
+						case "Imagem101:":
+							additional += $",{code}";
+							break;
+						case "Imagem102:":
+							additional += $",{code}";
+							break;
+						case "Imagem103:":
+							additional += $",{code}";
+							break;
+						case "Imagem104:":
+							additional += $",{code}";
+							break;
+						case "Imagem105:":
+							additional += $",{code}";
+							break;
+						case "Imagem106:":
+							additional += $",{code}";
+							break;
+						case "Imagem107:":
+							additional += $",{code}";
+							break;
+						case "Imagem108:":
+							additional += $",{code}";
+							break;
+						case "Imagem109:":
+							additional += $",{code}";
+							break;
+						case "Imagem110:":
+							additional += $",{code}";
+							break;;
+						case "Imagem111:":
+							additional += $",{code}";
+							break;
+						case "Imagem112:":
+							additional += $",{code}";
+							break;
+						case "Imagem113:":
+							additional += $",{code}";
+							break;
+						case "Imagem114:":
+							additional += $",{code}";
+							break;
+						case "Imagem115:":
+							additional += $",{code}";
+							break;
+						case "Imagem116:":
+							additional += $",{code}";
+							break;
+						case "Imagem117:":
+							additional += $",{code}";
+							break;
+						case "Imagem118:":
+							additional += $",{code}";
+							break;
+		
+						case "MarcadorF:":
+							additional += $",{code}";
+							break;;
+						case "MarcadorP:":
+							additional += $",{code}";
+							break;
+						case "MoveObsto:":
+							MoveObsto = !(code.Substring(10) == "false");
+							break;
+						case "ObstacTmp:":
+							ObstacTmp = short.Parse(code.Substring(10));
+							break;
+						case "PontoDist:":
+							PontoDist = !(code.Substring(10) == "false");
+							break;
+						case "ResgtePos:":
+							ResgtePos = short.Parse(code.Substring(10));
+							break;
+						case "RobosPerm:":
+							if (code.Substring(10).Length == 6 && code.Substring(10) != "000000"){
+								RobosPerm = code.Substring(10);
+								break;
+							}
+							RobosPerm = "111111";
+							break;
+						case "SaveMrcds:":
+							SaveMrcds = short.Parse(code.Substring(10));
+							break;
+						case "TempoMxmo:":
+						  switch (int.Parse(code.Substring(10))){
+							case 0:
+							  TempoMxmo = 0;
+							  break;
+							case 1:
+							  TempoMxmo = 1;
+							  break;
+							case 2:
+							  TempoMxmo = 2;
+							  break;
+							case 4:
+							  TempoMxmo = 4;
+							  break;
+							case 5:
+							  TempoMxmo = 5;
+							  break;
+							case 6:
+							  TempoMxmo = 6;
+							  break;
+							default:
+							  TempoMxmo = 3;
+							  break;
+						  }
+						  break;
+						case "VelaAcesa:":
+							additional += $",{code}";
+							break;
+						case "VelaApgda:":
+							additional += $",{code}";
+							break;
+						case "VitimOrta:":
+							additional += $",{code}";
+							break;
+						case "VitimViva:":
+							additional += $",{code}";
+							break;
+						case "VitmaPnts:":
+							VitmaPnts = !(code.Substring(10) == "false");
+							break;
+						case "VtmsMrtas:":
+							VtmsMrtas = short.Parse(code.Substring(10));
+							if (VtmsMrtas > 10 || VtmsMrtas < 0){
+								VtmsMrtas = 0;
+							}
+						  break;
+						case "VtmsVivas:":
+							VtmsVivas = short.Parse(code.Substring(10));
+							if (VtmsVivas > 10 || VtmsVivas < 0){
+								VtmsVivas = 0;
+							}
+						  break;
+						case "prfsrCubo:":
+							additional += $",{code}";
+							break;
+				  	}
+				}catch (Exception ex){
+					GD.Print($"Error on load switch code: {code}, with exception: {ex.Message}");
+					additional += $",{code}";
+				}
+			}
 		}
+		updateInfoMenu();
 	}
 
 	public override void _Ready(){
 		if(manual_arena != ""){
-			setArena(manual_arena);
+			regenerateArena(manual_arena);
 		}
 	}
 
