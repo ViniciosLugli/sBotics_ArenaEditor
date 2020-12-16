@@ -1,13 +1,14 @@
 using Godot;
 using System.Collections.Generic;
 using System;
+using System.Linq;
 
 public class Tile{
-	public short x { get; set; }
-	public short y { get; set; }
-	public short degrees { get; set; }
-	public string type { get; set; }
-	public short id{ get; set; }
+	public short x{get;set;}
+	public short y{get;set;}
+	public short degrees{get;set;}
+	public string type{get;set;}
+	public short id{get;set;}
 	public Tile(short x, short y, short degrees, string type, short id){
 		this.x = x;
 		this.y = y;
@@ -338,8 +339,8 @@ public class ArenaCoder : Node2D {
 	bool BoolTpFim = false; //FINALIZAR ROTINA NO FIM DO TEMPO
 	string Descricao = "Arena modificada pelo editor de arenas externo do sBotics :)"; //DESCRIÇÃO DA ARENA
 	string[] HoraDoDia = {"12","00"}; //HORARIO DA ARENA
-	string[] MarcadorF; //MARCADOR FALHAS
-	string[] MarcadorP; //MARCADOR NORMAL
+	//string[] MarcadorF; //MARCADOR FALHAS
+	//string[] MarcadorP; //MARCADOR NORMAL
 	bool MoveObsto = false; //PERMISSÃO DE MOVER OBSTÁCULO SEM FALHA
 	short ObstacTmp = 30; //TEMPO DE OBSTÁCULO EM SEGUNDOS
 	bool PontoDist = false; //PONTUAÇÃO CONSIDERA DISTÂNCIA
@@ -348,19 +349,28 @@ public class ArenaCoder : Node2D {
 	short SaveMrcds = 0; //NUMERO DE MARCADORES
 	short TempoMxmo = 3; // TEMPO MAXIMO:0 = 1m, 1 = 2m, 3 = 5m, 4 = 8m, 5 = 10m, 6 = 1440m ("SEM TEMPO LIMITE")
 	bool VitmaPnts = false; //PONTUAÇÃO PONDERADA
-	string[] VelaAcesa; //POSIÇÃO OBJETO VELA ACESA
-	string[] VelaApgda; //POSIÇÃO OBJETO VELA APAGADA
-	string[] VitimOrta; //POSIÇÃO OBJETO VITIMA MORTA MANUAL
-	string[] VitimViva; //POSIÇÃO OBJETO VITIMA VIVA MANUAL
+	//string[] VelaAcesa; //POSIÇÃO OBJETO VELA ACESA
+	//string[] VelaApgda; //POSIÇÃO OBJETO VELA APAGADA
+	//string[] VitimOrta; //POSIÇÃO OBJETO VITIMA MORTA MANUAL
+	//string[] VitimViva; //POSIÇÃO OBJETO VITIMA VIVA MANUAL
 	short VtmsMrtas = 2; //QUANTIDADE VÍTIMAS MORTAS (< 10 && > 0)
 	short VtmsVivas = 1; //QUANTIDADE VÍTIMAS VIVAS(< 10 && > 0)
-	string[] prfsrCubo; //POSIÇÃO OBJETO CUBO/PARALELEPIPEDO
+	//string[] prfsrCubo; //POSIÇÃO OBJETO CUBO/PARALELEPIPEDO
+	byte TipoRampaResgate = 1;
+	/*
+	0 = SEM RAMPA
+	1 = RAMPA PADRÃO
+	2 = RAMPA COM GAP
+	3 = RAMPA COM REDUTOR
+	4 = RAMPA COM REDUTORES
+	5 = RAMPA COM DOIS GAPS
+	6 = RAMPA COM GAP E REDUTOR
+	*/
 	//
 
 	//Arena code add
 	string additional = "";
 	//
-
 	public void updateInfoMenu(){
 		string output = "";
 		output += $"BoolEndCd: {BoolEndCd.ToString()}\n";
@@ -382,6 +392,7 @@ public class ArenaCoder : Node2D {
 		output += $"VitmaPnts: {VitmaPnts}\n";
 		output += $"VtmsMrtas: {VtmsMrtas}\n";
 		output += $"VtmsVivas: {VtmsVivas}\n";
+		output += $"TipoRampaResgate: {TipoRampaResgate}\n";
 		GetParent().GetNode("ViewMain").GetNode("Menu").GetNode<Label>("Infos").Text = output;
 	}
 
@@ -391,12 +402,32 @@ public class ArenaCoder : Node2D {
 		return new Vector2( (short)(448+ (tile_x*256)), (short)(632 - (tile_y*256)));
 	}
 
+	public void reserve(string tileconfig){
+		additional += $",{tileconfig}";
+	}
+
+	public byte getZindex(string type, short id){
+		string[] Zindex2 = new string[]{"r73"};
+		//string[] Zindex3 = new string[]{};
+		if(Zindex2.Contains($"{type}{id}")){
+			return 2;
+		}else{
+			return 1;
+		}
+	}
+
 	public Texture loadTile(string type, short id){
-		if(type.ToLower() == "r"){
-			return (Texture)ResourceLoader.Load($"res://dataFile/2D assets/Ladrilhos/Retas/{id}.png");
-		}else if(type.ToLower() == "c"){
-			return (Texture)ResourceLoader.Load($"res://dataFile/2D assets/Ladrilhos/Curvas/{id}.png");
-		}return (Texture)ResourceLoader.Load($"res://dataFile/2D assets/Outros/Fundo_branco.png");
+		try{
+			if(type.ToLower() == "r"){
+				return (Texture)ResourceLoader.Load($"res://dataFile/2D assets/Ladrilhos/Retas/{id}.png");
+			}else if(type.ToLower() == "c"){
+				return (Texture)ResourceLoader.Load($"res://dataFile/2D assets/Ladrilhos/Curvas/{id}.png");
+			}
+		}catch{
+			GD.Print($"Erro on import tile with type {type} and id: {id}");
+			return (Texture)ResourceLoader.Load($"res://dataFile/2D assets/Outros/Fundo_branco.png");
+		}
+		return (Texture)ResourceLoader.Load($"res://dataFile/2D assets/Outros/Fundo_branco.png");
 	}
 
 	public void regenerateArena(string arena_code){
@@ -407,10 +438,17 @@ public class ArenaCoder : Node2D {
 				TempTile = coder.decode(code);
 				Sprite CurrentChild = (Sprite)TileBase_scene.Instance();
 				CurrentChild.GetNode<Sprite>("TileBase").Texture = loadTile(TempTile.type, TempTile.id);
+				CurrentChild.ZIndex = getZindex(TempTile.type, TempTile.id);
 				CurrentChild.Position = getTilePos((byte)TempTile.x, (byte)TempTile.y);
 				CurrentChild.RotationDegrees = TempTile.degrees;
-				//GD.Print($"Added child in: { getTilePos((byte)TempTile.x, (byte)TempTile.y)}");
+				CurrentChild.Name = "{code}";
 				AddChild(CurrentChild);
+			}else if(code.Length == 1){//Probaly config code
+				try{
+					TipoRampaResgate = byte.Parse(code);
+				}catch{
+					GD.Print($"Cant Parse {code} to byte!");
+				}
 			}else if(code.Length > 9){//Probaly config code
 				try{
 					switch (code.Substring(0, 10)){
@@ -471,86 +509,86 @@ public class ArenaCoder : Node2D {
 							HoraDoDia = HorarioArray;
 							break;
 						case "Imagem001:":
-							additional += $",{code}";
+							reserve(code);
 							break;
 						case "Imagem021:":
-							additional += $",{code}";
+							reserve(code);
 							break;
 						case "Imagem022:":
-							additional += $",{code}";
+							reserve(code);
 							break;
 						case "Imagem023:":
-							additional += $",{code}";
+							reserve(code);
 							break;
 						case "Imagem024:":
-							additional += $",{code}";
+							reserve(code);
 							break;
 						case "Imagem031:":
-							additional += $",{code}";
+							reserve(code);
 							break;
 						case "Imagem032:":
-							additional += $",{code}";
+							reserve(code);
 							break;
 						case "Imagem101:":
-							additional += $",{code}";
+							reserve(code);
 							break;
 						case "Imagem102:":
-							additional += $",{code}";
+							reserve(code);
 							break;
 						case "Imagem103:":
-							additional += $",{code}";
+							reserve(code);
 							break;
 						case "Imagem104:":
-							additional += $",{code}";
+							reserve(code);
 							break;
 						case "Imagem105:":
-							additional += $",{code}";
+							reserve(code);
 							break;
 						case "Imagem106:":
-							additional += $",{code}";
+							reserve(code);
 							break;
 						case "Imagem107:":
-							additional += $",{code}";
+							reserve(code);
 							break;
 						case "Imagem108:":
-							additional += $",{code}";
+							reserve(code);
 							break;
 						case "Imagem109:":
-							additional += $",{code}";
+							reserve(code);
 							break;
 						case "Imagem110:":
-							additional += $",{code}";
+							reserve(code);
 							break;;
 						case "Imagem111:":
-							additional += $",{code}";
+							reserve(code);
 							break;
 						case "Imagem112:":
-							additional += $",{code}";
+							reserve(code);
 							break;
 						case "Imagem113:":
-							additional += $",{code}";
+							reserve(code);
 							break;
 						case "Imagem114:":
-							additional += $",{code}";
+							reserve(code);
 							break;
 						case "Imagem115:":
-							additional += $",{code}";
+							reserve(code);
 							break;
 						case "Imagem116:":
-							additional += $",{code}";
+							reserve(code);
 							break;
 						case "Imagem117:":
-							additional += $",{code}";
+							reserve(code);
 							break;
 						case "Imagem118:":
-							additional += $",{code}";
+							reserve(code);
 							break;
 		
 						case "MarcadorF:":
-							additional += $",{code}";
+							reserve(code);
 							break;;
 						case "MarcadorP:":
-							additional += $",{code}";
+							reserve(code);
 							break;
 						case "MoveObsto:":
 							MoveObsto = !(code.Substring(10) == "false");
@@ -600,16 +638,16 @@ public class ArenaCoder : Node2D {
 						  }
 						  break;
 						case "VelaAcesa:":
-							additional += $",{code}";
+							reserve(code);
 							break;
 						case "VelaApgda:":
-							additional += $",{code}";
+							reserve(code);
 							break;
 						case "VitimOrta:":
-							additional += $",{code}";
+							reserve(code);
 							break;
 						case "VitimViva:":
-							additional += $",{code}";
+							reserve(code);
 							break;
 						case "VitmaPnts:":
 							VitmaPnts = !(code.Substring(10) == "false");
@@ -627,7 +665,7 @@ public class ArenaCoder : Node2D {
 							}
 						  break;
 						case "prfsrCubo:":
-							additional += $",{code}";
+							reserve(code);
 							break;
 				  	}
 				}catch (Exception ex){

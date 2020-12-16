@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/73.png-08db8053b0d7bc518dd65c34d65ea763.stex"
+path="res://.import/73_5.png-44efcca4aedefdb03cfd2860fb37fad8.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://dataFile/2D assets/Ladrilhos/Retas/73.png"
-dest_files=[ "res://.import/73.png-08db8053b0d7bc518dd65c34d65ea763.stex" ]
+source_file="res://dataFile/2D assets/Ladrilhos/Retas/73_5.png"
+dest_files=[ "res://.import/73_5.png-44efcca4aedefdb03cfd2860fb37fad8.stex" ]
 
 [params]
 
