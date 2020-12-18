@@ -324,6 +324,7 @@ public class ArenaCoder : Node2D {
 	[Export] public string manual_arena = "";
 
 	private PackedScene TileBase_scene = (PackedScene)ResourceLoader.Load("res://dataScenes/TileBase.tscn");
+	private PackedScene UnderLine_scene = (PackedScene)ResourceLoader.Load("res://dataScenes/UnderLine.tscn");
 	private Texture BaseWhite_texture = (Texture)ResourceLoader.Load($"res://dataFile/2D assets/Complementares/Fundo_branco.png");
 	public CleitonCoders coder = new CleitonCoders();
 
@@ -331,6 +332,8 @@ public class ArenaCoder : Node2D {
 	Tile RescueDat = new Tile(0, 0, 0, "null", 0);
 	Tile EndingDat = new Tile(0, 0, 0, "null", 0);
 	Vector2 OffsetRescue =  new Vector2(10, 256);
+	string[] Zindex2 = new string[]{"r73"};
+	string[] UnderLineTiles = new string[]{"r26", "r27", "r28", "r29", "r30", "r31", "r38", "r40", "r42", "r44", "r46", "r48", "r53", "r59", "r62", "r65", "r70"};
 	//
 
 	//Arena settings:
@@ -441,7 +444,6 @@ public class ArenaCoder : Node2D {
 	}
 
 	public byte getZindex(string type, short id){
-		string[] Zindex2 = new string[]{"r73"};
 		//string[] Zindex3 = new string[]{};
 		if(Zindex2.Contains($"{type}{id}")){
 			return 2;
@@ -490,6 +492,14 @@ public class ArenaCoder : Node2D {
 		CurrentChild.Position = getTilePos((byte)CurrentTile.x, (byte)CurrentTile.y);
 		CurrentChild.RotationDegrees = CurrentTile.degrees;
 		//CurrentChild.Name = $"{CurrentTile.x}{CurrentTile.x}";
+		//Case underline tile:
+		if(UnderLineTiles.Contains($"{CurrentTile.type}{CurrentTile.id}")){
+			CurrentChild.GetNode<Sprite>("Filter").Texture = (Texture)ResourceLoader.Load($"res://dataFile/2D assets/Complementares/Filtro_Azul_Linha.png");
+			GD.Print($"Underline: {CurrentTile.type}{CurrentTile.id}");
+			Area2D CurrentUnderLine = (Area2D)UnderLine_scene.Instance();
+			CurrentUnderLine.GetNode<Sprite>("UnderLineSprite").Texture = (Texture)ResourceLoader.Load($"res://dataFile/2D assets/Ladrilhos/Retas/{CurrentTile.id}_.png");
+			CurrentChild.AddChild(CurrentUnderLine);
+		}
 		AddChild(CurrentChild);
 	}
 

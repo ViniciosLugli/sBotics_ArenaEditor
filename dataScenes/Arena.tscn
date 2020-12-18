@@ -1,8 +1,9 @@
-[gd_scene load_steps=5 format=2]
+[gd_scene load_steps=6 format=2]
 
 [ext_resource path="res://dataCode/ArenaCoder.cs" type="Script" id=1]
 [ext_resource path="res://dataCode/ViewMain.cs" type="Script" id=2]
 [ext_resource path="res://dataFile/fonts/UbuntuMono-Italic.ttf" type="DynamicFontData" id=3]
+[ext_resource path="res://dataFile/2D assets/Outros/Background_editor.png" type="Texture" id=4]
 
 [sub_resource type="DynamicFont" id=1]
 size = 35
@@ -13,18 +14,12 @@ font_data = ExtResource( 3 )
 
 [node name="Editor" type="Node2D" parent="."]
 script = ExtResource( 1 )
-manual_arena = "0000r0180,0010r2180,0020r0180"
+manual_arena = "0010r8000,0000r0000,0020rd000,0030r8180"
 
-[node name="Background" type="ColorRect" parent="Editor"]
-margin_left = 100.0
-margin_top = -2820.0
-margin_right = 3600.0
-margin_bottom = 680.0
-rect_scale = Vector2( 1.11393, 1.11393 )
-color = Color( 0.133333, 0.133333, 0.133333, 1 )
-__meta__ = {
-"_edit_use_anchors_": false
-}
+[node name="Background" type="Sprite" parent="Editor"]
+position = Vector2( 2040, -900 )
+scale = Vector2( 1.15, 1.15 )
+texture = ExtResource( 4 )
 
 [node name="ViewMain" type="Node2D" parent="."]
 position = Vector2( 1554.15, -388.446 )
