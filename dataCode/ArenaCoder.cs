@@ -42,7 +42,18 @@ public class CleitonCoders{
 		return result;
 	}
 
-	public string getStraight(int index){
+	public string GetStringByIndex(int id) {
+		Dictionary<int, string> BaseDecoder = this.tileReverseDictionary();
+		string result = "cleiton strings";
+		try{
+			result = BaseDecoder[id];
+		}catch{
+			result = "0";
+		}
+		return result;
+	}
+
+	public string getStraightName(int index){
 		Dictionary<int, string> BaseDecoder = this.straightTileDictionary();
 		string result = "Penis";
 		try{
@@ -53,7 +64,7 @@ public class CleitonCoders{
 		return result;
 	}
 
-	public string getCurved(int index){
+	public string getCurvedName(int index){
 		Dictionary<int, string> BaseDecoder = this.curvedTileDictionary();
 		string result = "sim!";
 		try{
@@ -87,7 +98,97 @@ public class CleitonCoders{
 		return new Tile(pos_x, pos_y, direction, compl0, compl1);
 	}
 
-	public void encode(){
+	public string encode(Tile CurrentTile){
+		return $"{CurrentTile.x}0{CurrentTile.y}0{CurrentTile.type}{GetStringByIndex(CurrentTile.id)}{(CurrentTile.degrees).ToString("000")}";
+	}
+
+	private Dictionary<int, string> tileReverseDictionary(){
+		return new Dictionary<int, string>{
+			{0, "0"},
+			{1, "1"},
+			{2, "2"},
+			{3, "3"},
+			{4, "4"},
+			{5, "5"},
+			{6, "6"},
+			{7, "7"},
+			{8, "8"},
+			{9, "9"},
+			{10, "a"},
+			{11, "b"},
+			{12, "c"},
+			{13, "d"},
+			{14, "e"},
+			{15, "f"},
+			{16, "g"},
+			{17, "h"},
+			{18, "i"},
+			{19, "j"},
+			{20, "k"},
+			{21, "l"},
+			{22, "m"},
+			{23, "n"},
+			{24, "o"},
+			{25, "p"},
+			{26, "q"},
+			{27, "r"},
+			{28, "s"},
+			{29, "t"},
+			{30, "u"},
+			{31, "v"},
+			{32, "w"},
+			{33, "x"},
+			{34, "y"},
+			{35, "z"},
+			{36, "A"},
+			{37, "B"},
+			{38, "C"},
+			{39, "D"},
+			{40, "E"},
+			{41, "F"},
+			{42, "G"},
+			{43, "H"},
+			{44, "I"},
+			{45, "J"},
+			{46, "K"},
+			{47, "L"},
+			{48, "M"},
+			{49, "N"},
+			{50, "O"},
+			{51, "P"},
+			{52, "Q"},
+			{53, "R"},
+			{54, "S"},
+			{55, "T"},
+			{56, "U"},
+			{57, "V"},
+			{58, "W"},
+			{59, "X"},
+			{60, "Y"},
+			{61, "Z"},
+			{62, "+"},
+			{63, "/"},
+			{64, "="},
+			{65, "<"},
+			{66, ">"},
+			{67, "{"},
+			{68, "}"},
+			{69, "["},
+			{70, "]"},
+			{71, "("},
+			{72, ")"},
+			{73, "?"},
+			{74, "&"},
+			{75, "$"},
+			{76, "^"},
+			{77, "-"},
+			{78, "_"},
+			{79, "@"},
+			{80, "Á"},
+			{81, "É"},
+			{82, "Í"},
+			{83, "Ó"}
+		};
 	}
 
 	private Dictionary<string, int> tileDictionary(){
@@ -178,6 +279,7 @@ public class CleitonCoders{
 			{"Ó", 83}
 		};
 	}
+
 	public Dictionary<int, string> straightTileDictionary(){
 		return new Dictionary<int, string>{
 			{993, "<b>======== Especiais ========</b>"},
@@ -273,6 +375,7 @@ public class CleitonCoders{
 			}
 		};
 	}
+
 	public Dictionary<int, string> curvedTileDictionary(){
 		return new Dictionary<int, string>{
 			{993, "<b>======== Especiais ========</b>"},
@@ -462,7 +565,12 @@ public class ArenaCoder : Node2D {
 
 	public void loadFlags(){
 		if(RescueDat.type != "null"){
-			addTile(RescueDat, (Texture)ResourceLoader.Load($"res://dataFile/2D assets/Ladrilhos/Retas/{RescueDat.id}_{RescueTyp}.png"), false, OffsetRescue);
+			if(RescueTyp != 0){
+				addTile(RescueDat, (Texture)ResourceLoader.Load($"res://dataFile/2D assets/Ladrilhos/Retas/{RescueDat.id}_{RescueTyp}.png"), false, OffsetRescue);
+			}else{
+				addTile(RescueDat, (Texture)ResourceLoader.Load($"res://dataFile/2D assets/Ladrilhos/Retas/{RescueDat.id}_{RescueTyp}.png"), false,  new Vector2(0, 0));
+			}
+			
 		}
 	}
 
@@ -491,7 +599,7 @@ public class ArenaCoder : Node2D {
 		CurrentChild.ZIndex = getZindex(CurrentTile.type, CurrentTile.id);
 		CurrentChild.Position = getTilePos((byte)CurrentTile.x, (byte)CurrentTile.y);
 		CurrentChild.RotationDegrees = CurrentTile.degrees;
-		//CurrentChild.Name = $"{CurrentTile.x}{CurrentTile.x}";
+		CurrentChild.Name = coder.encode(CurrentTile);
 		//Case underline tile:
 		if(UnderLineTiles.Contains($"{CurrentTile.type}{CurrentTile.id}")){
 			CurrentChild.GetNode<Sprite>("Filter").Texture = (Texture)ResourceLoader.Load($"res://dataFile/2D assets/Complementares/Filtro_Azul_Linha.png");
