@@ -8,9 +8,12 @@ public class UnderLine : Area2D{
 		if(IsOverlaping){
 			GetParent().GetNode<Sprite>("TileBase").Visible = false;
 			GetNode<Sprite>("UnderLineSprite").Visible = true;
-		}else{
+			GetParent().GetNode<Sprite>("Filter").Modulate = new Color(1, 1, 1, 0.6f);
+		}
+		else{
 			GetNode<Sprite>("UnderLineSprite").Visible = false;
 			GetParent().GetNode<Sprite>("TileBase").Visible = true;
+			GetParent().GetNode<Sprite>("Filter").Modulate = new Color(1, 1, 1, 1);
 		}
 	}
 	private void _on_Area_mouse_entered(){

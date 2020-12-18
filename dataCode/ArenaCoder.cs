@@ -427,7 +427,7 @@ public class ArenaCoder : Node2D {
 	[Export] public string manual_arena = "";
 
 	private PackedScene TileBase_scene = (PackedScene)ResourceLoader.Load("res://dataScenes/TileBase.tscn");
-	private PackedScene UnderLine_scene = (PackedScene)ResourceLoader.Load("res://dataScenes/UnderLine.tscn");
+	private PackedScene UnderLine_scene = (PackedScene)ResourceLoader.Load("res://dataScenes/UnderLine_tile.tscn");
 	private Texture BaseWhite_texture = (Texture)ResourceLoader.Load($"res://dataFile/2D assets/Complementares/Fundo_branco.png");
 	public CleitonCoders coder = new CleitonCoders();
 
@@ -505,8 +505,10 @@ public class ArenaCoder : Node2D {
 	}
 
 	public Vector2 getTilePos(byte tile_x, byte tile_y){
-		tile_x = (byte)((tile_x > 9) ? ((tile_x < 0) ? 0 : tile_x) : tile_x);
-		tile_y = (byte)((tile_y > 9) ? ((tile_y < 0) ? 0 : tile_y) : tile_y);
+		tile_x = (byte)((tile_x > 9) ? 9 : tile_x);
+		tile_y = (byte)((tile_y > 9) ? 9 : tile_y);
+		tile_x = (byte)((tile_x < 0) ? 0 : tile_x);
+		tile_y = (byte)((tile_y < 0) ? 0 : tile_y);
 		return new Vector2( (short)(448 + (tile_x * 256)), (short)(632 - (tile_y * 256)));
 	}
 

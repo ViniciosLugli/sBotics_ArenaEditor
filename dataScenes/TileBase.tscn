@@ -6,4 +6,3 @@
 
 [node name="Filter" type="Sprite" parent="."]
 z_index = 1
-z_as_relative = false
