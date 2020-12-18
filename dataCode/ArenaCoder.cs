@@ -26,7 +26,7 @@ public class CleitonCoders{
 	}
 
 	public string[] filter(string native_code){
-		string[] final_code = (native_code.Replace(" ", "").Replace("\n", "").Replace("\r", "").Replace("\b", "").Replace("\t", "")).Split(new char[] { ',' });
+		string[] final_code = (native_code.Replace("\n", "").Replace("\r", "").Replace("\b", "").Replace("\t", "")).Split(new char[] { ',' });
 		GD.Print($"Codes array: {string.Join(", ", final_code)}");
 		return final_code;
 	}
@@ -324,9 +324,13 @@ public class ArenaCoder : Node2D {
 	[Export] public string manual_arena = "";
 
 	private PackedScene TileBase_scene = (PackedScene)ResourceLoader.Load("res://dataScenes/TileBase.tscn");
+	private Texture BaseWhite_texture = (Texture)ResourceLoader.Load($"res://dataFile/2D assets/Complementares/Fundo_branco.png");
 	public CleitonCoders coder = new CleitonCoders();
 
 	//Geral
+	Tile RescueDat = new Tile(0, 0, 0, "null", 0);
+	Tile EndingDat = new Tile(0, 0, 0, "null", 0);
+	Vector2 OffsetRescue =  new Vector2(10, 256);
 	//
 
 	//Arena settings:
@@ -356,16 +360,14 @@ public class ArenaCoder : Node2D {
 	short VtmsMrtas = 2; //QUANTIDADE VÍTIMAS MORTAS (< 10 && > 0)
 	short VtmsVivas = 1; //QUANTIDADE VÍTIMAS VIVAS(< 10 && > 0)
 	//string[] prfsrCubo; //POSIÇÃO OBJETO CUBO/PARALELEPIPEDO
-	byte TipoRampaResgate = 1;
-	/*
+	byte RescueTyp = 1;	/* INFO ABAIXO:
 	0 = SEM RAMPA
 	1 = RAMPA PADRÃO
 	2 = RAMPA COM GAP
 	3 = RAMPA COM REDUTOR
 	4 = RAMPA COM REDUTORES
 	5 = RAMPA COM DOIS GAPS
-	6 = RAMPA COM GAP E REDUTOR
-	*/
+	6 = RAMPA COM GAP E REDUTOR */
 	//
 
 	//Arena code add
@@ -392,18 +394,50 @@ public class ArenaCoder : Node2D {
 		output += $"VitmaPnts: {VitmaPnts}\n";
 		output += $"VtmsMrtas: {VtmsMrtas}\n";
 		output += $"VtmsVivas: {VtmsVivas}\n";
-		output += $"TipoRampaResgate: {TipoRampaResgate}\n";
+		output += $"RescueTyp: {RescueTyp}\n";
 		GetParent().GetNode("ViewMain").GetNode("Menu").GetNode<Label>("Infos").Text = output;
 	}
 
 	public Vector2 getTilePos(byte tile_x, byte tile_y){
 		tile_x = (byte)((tile_x > 9) ? ((tile_x < 0) ? 0 : tile_x) : tile_x);
 		tile_y = (byte)((tile_y > 9) ? ((tile_y < 0) ? 0 : tile_y) : tile_y);
-		return new Vector2( (short)(448+ (tile_x*256)), (short)(632 - (tile_y*256)));
+		return new Vector2( (short)(448 + (tile_x * 256)), (short)(632 - (tile_y * 256)));
 	}
 
 	public void reserve(string tileconfig){
 		additional += $",{tileconfig}";
+	}
+
+	private void resetArena(){//reset all default
+		RescueDat = new Tile(0, 0, 0, "null", 0);
+		EndingDat = new Tile(0, 0, 0, "null", 0);
+		BoolEndCd = false;
+		BoolNoPos = false;
+		BoolPrgso = false;
+		BoolShowM = false;
+		BoolSlnha = false;
+		BoolTSala = false;
+		BoolTpFim = false;
+		Descricao = "Arena modificada pelo editor de arenas externo do sBotics :)";
+		HoraDoDia = new string[]{"12","00"};
+		//string[] MarcadorF;
+		//string[] MarcadorP;
+		MoveObsto = false;
+		ObstacTmp = 30;
+		PontoDist = false;
+		ResgtePos = 1;
+		RobosPerm = "111111";
+		SaveMrcds = 0;
+		TempoMxmo = 3;
+		VitmaPnts = false;
+		//string[] VelaAcesa;
+		//string[] VelaApgda;
+		//string[] VitimOrta;
+		//string[] VitimViva;
+		VtmsMrtas = 2;
+		VtmsVivas = 1;
+		//string[] prfsrCubo;
+		RescueTyp = 1;
 	}
 
 	public byte getZindex(string type, short id){
@@ -416,7 +450,21 @@ public class ArenaCoder : Node2D {
 		}
 	}
 
-	public Texture loadTile(string type, short id){
+	public bool filterFlags(Tile ctile){
+		if((ctile.type == "r") && (ctile.id == 73) && (RescueDat.type == "null") && (EndingDat.type == "null")){
+			RescueDat = ctile;
+			return true;
+		}
+		return false;
+	}
+
+	public void loadFlags(){
+		if(RescueDat.type != "null"){
+			addTile(RescueDat, (Texture)ResourceLoader.Load($"res://dataFile/2D assets/Ladrilhos/Retas/{RescueDat.id}_{RescueTyp}.png"), false, OffsetRescue);
+		}
+	}
+
+	public Texture loadTextureTile(string type, short id){
 		try{
 			if(type.ToLower() == "r"){
 				return (Texture)ResourceLoader.Load($"res://dataFile/2D assets/Ladrilhos/Retas/{id}.png");
@@ -424,31 +472,52 @@ public class ArenaCoder : Node2D {
 				return (Texture)ResourceLoader.Load($"res://dataFile/2D assets/Ladrilhos/Curvas/{id}.png");
 			}
 		}catch{
-			GD.Print($"Erro on import tile with type {type} and id: {id}");
-			return (Texture)ResourceLoader.Load($"res://dataFile/2D assets/Outros/Fundo_branco.png");
+			GD.Print($"Error on import tile with type {type} and id: {id}");
+			return BaseWhite_texture;
 		}
-		return (Texture)ResourceLoader.Load($"res://dataFile/2D assets/Outros/Fundo_branco.png");
+		return BaseWhite_texture;
+	}
+		
+	public void addTile(Tile CurrentTile, Texture CurrentTexture, bool SetTileBase, Vector2 OffsetTileBase){
+		if(CurrentTile.type == "null"){return;}
+		Sprite CurrentChild = (Sprite)TileBase_scene.Instance();
+		CurrentChild.GetNode<Sprite>("TileBase").Texture = CurrentTexture;
+		CurrentChild.GetNode<Sprite>("TileBase").Offset = OffsetTileBase;
+		if(SetTileBase){
+			CurrentChild.Texture = BaseWhite_texture;
+		}
+		CurrentChild.ZIndex = getZindex(CurrentTile.type, CurrentTile.id);
+		CurrentChild.Position = getTilePos((byte)CurrentTile.x, (byte)CurrentTile.y);
+		CurrentChild.RotationDegrees = CurrentTile.degrees;
+		//CurrentChild.Name = $"{CurrentTile.x}{CurrentTile.x}";
+		AddChild(CurrentChild);
 	}
 
 	public void regenerateArena(string arena_code){
+		resetArena();
+
 		string[] final_code = coder.filter(arena_code);
-		Tile TempTile;
+		Tile CurrentTile;
 		foreach (string code in final_code){
+			if(code.Length > 9){
+				if(code.Substring(0, 10) != "Descricao:"){
+					code.Replace(" ", "");
+				}else{
+					Descricao = code.Substring(10);
+				}
+			}else{code.Replace(" ", "");}
 			if(code.Length == 9){//Normal tile
-				TempTile = coder.decode(code);
-				Sprite CurrentChild = (Sprite)TileBase_scene.Instance();
-				CurrentChild.GetNode<Sprite>("TileBase").Texture = loadTile(TempTile.type, TempTile.id);
-				CurrentChild.ZIndex = getZindex(TempTile.type, TempTile.id);
-				CurrentChild.Position = getTilePos((byte)TempTile.x, (byte)TempTile.y);
-				CurrentChild.RotationDegrees = TempTile.degrees;
-				CurrentChild.Name = "{code}";
-				AddChild(CurrentChild);
+				CurrentTile = coder.decode(code);
+				if(filterFlags(CurrentTile)){continue;}
+				addTile(CurrentTile, loadTextureTile(CurrentTile.type, CurrentTile.id), true, new Vector2(0, 0));
+
 			}else if(code.Length == 1){//Probaly config code
 				try{
-					TipoRampaResgate = byte.Parse(code);
+					RescueTyp = byte.Parse(code);
 				}catch{
 					GD.Print($"Cant Parse {code} to byte!");
 				}
+
 			}else if(code.Length > 9){//Probaly config code
 				try{
 					switch (code.Substring(0, 10)){
@@ -496,9 +565,6 @@ public class ArenaCoder : Node2D {
 								break;
 							}
 							BoolTpFim = true;
-							break;
-						case "Descricao:":
-							Descricao = code.Substring(10);
 							break;
 						case "HoraDoDia:":
 						  string[] HorarioArray = code.Substring(10).Split(':');
@@ -667,6 +733,9 @@ public class ArenaCoder : Node2D {
 						case "prfsrCubo:":
 							reserve(code);
 							break;
+						default:
+							reserve(code);
+							break;
 				  	}
 				}catch (Exception ex){
 					GD.Print($"Error on load switch code: {code}, with exception: {ex.Message}");
@@ -674,7 +743,8 @@ public class ArenaCoder : Node2D {
 				}
 			}
 		}
-		updateInfoMenu();
+		loadFlags();
+		//updateInfoMenu();
 	}
 
 	public override void _Ready(){
