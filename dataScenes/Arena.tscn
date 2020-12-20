@@ -15,11 +15,11 @@ font_data = ExtResource( 3 )
 
 [node name="Editor" type="Node2D" parent="."]
 script = ExtResource( 1 )
-manual_arena = "0000r&000,0010r8000,0020rc000,0030ra180,0040r0180,0050r&000"
+manual_arena = "0000r0000,0020ch000,1020cl090,1000cn270,3000cg270,3010r<000,3020cg000,4020rb270,5010c1090,5020r/090,5030r0090,2010c7270,2020c6090,4000rb270,5000c2180,5020r/090,4,VtmsVivas: 2,VtmsMrtas: 3,BoolTpFim: true,BoolShowM: true,BoolTSala: 2,Descricao: Arena gerada no padrão OBR.,BoolSlnha: false,BoolMrcdr: false,1040r?270,6000c3270,6010rn180,7000c5270,7010r4000,6020c9090,6030c2090,BoolEndCd: true,RobosPerm: 111110,HoraDoDia: 9,TempoMxmo: 4,BoolPrgso: true,7020c7180,7030c6090,0010c8270,8000c1180,8010rO000,8020c6090,1010c8090,4010r0270,2000c1180,8030cm180,ResgtePos: 1"
 
 [node name="Background" type="Sprite" parent="Editor"]
 position = Vector2( 2040, -900 )
-scale = Vector2( 1.15, 1.15 )
+scale = Vector2( 2, 2 )
 texture = ExtResource( 4 )
 
 [node name="ViewMain" type="Node2D" parent="."]
