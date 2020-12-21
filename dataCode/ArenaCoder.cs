@@ -19,7 +19,7 @@ public class Tile{
 }
 
 public class CleitonCoders{
-	public static string reverse(string s){
+	public string reverse(string s){
 		char[] arr = s.ToCharArray();
 		Array.Reverse(arr);
 		return new string(arr);
@@ -53,36 +53,13 @@ public class CleitonCoders{
 		return result;
 	}
 
-	public string getStraightName(int index){
-		Dictionary<int, string> BaseDecoder = this.straightTileDictionary();
-		string result = "Penis";
-		try{
-			result = BaseDecoder[index];
-		}catch{
-			result = "Não encontrado";
-		}
-		return result;
-	}
-
-	public string getCurvedName(int index){
-		Dictionary<int, string> BaseDecoder = this.curvedTileDictionary();
-		string result = "sim!";
-		try{
-			result = BaseDecoder[index];
-		}catch{
-			result = "Não encontrado";
-		}
-		return result;
-	}
-
 	public Tile decode(string code){
 		short pos_x = 0;
 		short pos_y = 0;
 		short direction = 0;
 		string compl0 = "r";
 		short compl1 = 0;
-		try
-		{
+		try{
 			pos_x = byte.Parse(reverse(code.Substring(0, 2)));
 			pos_y = byte.Parse(reverse(code.Substring(2, 2)));
 			direction = short.Parse(code.Substring(6, 3));
@@ -279,147 +256,6 @@ public class CleitonCoders{
 			{"Ó", 83}
 		};
 	}
-
-	public Dictionary<int, string> straightTileDictionary(){
-		return new Dictionary<int, string>{
-			{993, "<b>======== Especiais ========</b>"},
-			{75, "Ladrilho de início"},
-			{77, "Ladrilho de início com paredes"},
-			{76, "Ladrilho de início sem linha"},
-			{78, "Ladrilho final"},
-			{80, "Ladrilho final com paredes"},
-			{79, "Ladrilho final sem linha"},
-			{71, "Ladrilho Vazio"},
-			{73, "Terceira Sala"},
-			{999, "<b>======== Sem pontuação ========</b>"},
-			{72, "Entrada sala de resgate"},
-			{82, "Escadaria"},
-			{0, "Linha"},
-			{51, "Linha com V"},
-			{56, "Meia Lua"},
-			{3, "Zigue-Zague"},
-			{5, "Zigue-Zague 90°"},
-			{68, "Zigue-Zague 90° Unilateral"},
-			{57, "Zigue-Zague Suave"},
-			{60, "Zigue-Zague Suave Unilateral"},
-			{63, "Zigue-Zague Unilateral"},
-			{998, "<b>======== Com pontuação ========</b>"},
-			{33, "2 Gaps"},
-			{18, "4 Retornos"},
-			{6, "Encruzilhada C"},
-			{50, "Encruzilhada C com Gap"},
-			{24, "Encruzilhada Reta"},
-			{25, "Encruzilhada T Reta"},
-			{74, "Gangorra"},
-			{1, "Gap"},
-			{32, "Gap e Redutor"},
-			{35, "Gap e Redutor Inclinado"},
-			{4, "Obstáculo"},
-			{7, "Obstáculo Sem-Linhas"},
-			{23, "Portal"},
-			{2, "Redutor"},
-			{34, "Redutor Inclinado"},
-			{22, "Redutores"},
-			{36, "Redutores Inclinados"},
-			{81, "Rotatória"},
-			{37, "Zigue-Zague com Redutor"},
-			{997, "<b>======== Elevadas sem pontuação ========</b>"},
-			{52, "Linha com V Elevado"},
-			{53, "Linha com V Elevado com Linha Inferior"},
-			{26, "Linha Elevada com Linha Inferior"},
-			{8, "Rampa"},
-			{12, "Reta Elevada"},
-			{17, "Zigue-Zague 90° Elevado"},
-			{31, "Zigue-Zague 90° Elevado com Linha Inferior"},
-			{69, "Zigue-Zague 90° Unilateral Elevado "},
-			{70, "Zigue-Zague 90° Unilateral Elevado com Linha Inferior"},
-			{16, "Zigue-Zague Elevado"},
-			{30, "Zigue-Zague Elevado com Linha Inferior"},
-			{58, "Zigue-Zague Suave Elevado"},
-			{59, "Zigue-Zague Suave Elevado com Linha Inferior"},
-			{61, "Zigue-Zague Suave Unilateral Elevado"},
-			{62, "Zigue-Zague Suave Unilateral Elevado com Linha Inferior"},
-			{64, "Zigue-Zague Unilateral Elevado"},
-			{65, "Zigue-Zague Unilateral Elevado com Linha Inferior"},
-			{996, "<b>======== Elevadas com pontuação ========</b>"},
-			{39, "2 Gaps Elevados"},
-			{38, "2 Gaps Elevados com Linha Inferior"},
-			{45, "Gap e Redutor Elevado"},
-			{44, "Gap e Redutor Elevado com Linha Inferior"},
-			{43, "Gap e Redutor Inclinado Elevado"},
-			{42, "Gap e Redutor Inclinado Elevado com Linha Inferior"},
-			{13, "Gap Elevado"},
-			{27, "Gap Elevado com Linha Inferior"},
-			{9, "Rampa com Gap"},
-			{10, "Rampa com Redutor"},
-			{11, "Rampa com Redutores"},
-			{14, "Redutor Elevado"},
-			{28, "Redutor Elevado com Linha Inferior"},
-			{41, "Redutor Inclinado Elevado"},
-			{40, "Redutor Inclinado Elevado com Linha Inferior"},
-			{15, "Redutores Elevados"},
-			{29, "Redutores Elevados com Linha Inferior"},
-			{47, "Redutores Inclinados Elevados"},
-			{46, "Redutores Inclinados Elevados com Linha Inferior"},
-			{49, "Zigue-Zague com Redutor Elevado"},
-			{48, "Zigue-Zague com Redutor Elevado com Linha Inferior"},
-			{995, "<b>======== Peças de labirinto ========</b>"},
-			{21, "3 Paredes"},
-			{20, "Parede"},
-			{19, "Paredes Laterais"},
-			{994, "<b>======== Conjunto de peças ========</b>"},
-			{54, "Conjunto Bilateral"},
-			{55, "Conjunto Bilateral Elevado"},
-			{66, "Conjunto Unilateral"},
-			{67, "Conjunto Unilateral Elevado"
-			}
-		};
-	}
-
-	public Dictionary<int, string> curvedTileDictionary(){
-		return new Dictionary<int, string>{
-			{993, "<b>======== Especiais ========</b>"},
-			{22, "Ladrilho Vazio"},
-			{999, "<b>======== Sem pontuação ========</b>"},
-			{1, "Curva 90°"},
-			{3, "Curva Complexa"},
-			{15, "Curva Degrau"},
-			{17, "Curva Degrau Suave"},
-			{24, "Curva Diagonal"},
-			{0, "Curva Suave"},
-			{30, "Dupla de Curvas Degrau"},
-			{29, "Dupla de Curvas Degrau Suave"},
-			{31, "Dupla de Curvas Diagonal"},
-			{32, "Dupla de Curvas Suave"},
-			{25, "Rotatória Aberta"},
-			{998, "<b>======== Com pontuação ========</b>"},
-			{4, "Encruzilhada C"},
-			{14, "Encruzilhada C com gap"},
-			{2, "Encruzilhada Circular"},
-			{7, "Encruzilhada com Verde"},
-			{8, "Encruzilhada Dupla"},
-			{9, "Encruzilhada Dupla Cruzada"},
-			{5, "Encruzilhada T"},
-			{6, "Encruzilhada T Dupla"},
-			{10, "Encruzilhada Tripla"},
-			{23, "Obstáculo"},
-			{27, "Rotatória Com Curva 90°"},
-			{26, "Rotatória Com Degraus"},
-			{28, "Rotatória Externa"},
-			{997, "<b>======== Elevadas sem pontuação ========</b>"},
-			{12, "Curva 90° Elevada"},
-			{16, "Curva Degrau Elevada"},
-			{18, "Curva Degrau Suave Elevada"},
-			{13, "Curva Suave Elevada"},
-			{995, "<b>======== Peças de labirinto ========</b>"},
-			{11, "Parede Curvada"},
-			{994, "<b>======== Conjunto de peças ========</b>"},
-			{21, "Conjunto Encruzilhadas Simples"},
-			{19, "Conjunto Simples"},
-			{20, "Conjunto Simples Elevado"
-			}
-		};
-	}
 }
 
 public class ArenaCoder : Node2D {
@@ -430,7 +266,7 @@ public class ArenaCoder : Node2D {
 	private PackedScene UnderLine_scene = (PackedScene)ResourceLoader.Load("res://dataScenes/UnderLine_tile.tscn");
 	private Texture BaseWhite_texture = (Texture)ResourceLoader.Load($"res://dataFile/2D assets/Complementares/Fundo_branco.png");
 	private Texture BaseWhiteNoised_texture = (Texture)ResourceLoader.Load($"res://dataFile/2D assets/Complementares/Fundo_branco_noised.png");
-	
+
 	//Rescue bot textures
 	private Texture BaseRescueBotNormal_texture = (Texture)ResourceLoader.Load($"res://dataFile/2D assets/Complementares/Fundo_resgate_bot_normal.png");
 	private Texture BaseRescueBotNoised_texture = (Texture)ResourceLoader.Load($"res://dataFile/2D assets/Complementares/Fundo_resgate_bot_noised.png");
@@ -489,7 +325,7 @@ public class ArenaCoder : Node2D {
 	//Arena code add
 	string additional = "";
 	//
-	public void updateInfoMenu(){
+	public void oldUpdateInfoMenu(){
 		string output = "";
 		output += $"BoolEndCd: {BoolEndCd.ToString()}\n";
 		output += $"BoolNoPos: {BoolNoPos.ToString()}\n";
@@ -532,7 +368,7 @@ public class ArenaCoder : Node2D {
 		BoolEndCd = false;
 		BoolNoPos = false;
 		BoolPrgso = false;
-		BoolShowM = false;
+		BoolShowM = true;
 		BoolSlnha = false;
 		BoolTSala = false;
 		BoolTpFim = false;
@@ -545,7 +381,7 @@ public class ArenaCoder : Node2D {
 		PontoDist = false;
 		ResgtePos = 1;
 		RobosPerm = "111111";
-		SaveMrcds = 0;
+		SaveMrcds = 2;
 		TempoMxmo = 3;
 		VitmaPnts = false;
 		//string[] VelaAcesa;
@@ -553,9 +389,13 @@ public class ArenaCoder : Node2D {
 		//string[] VitimOrta;
 		//string[] VitimViva;
 		VtmsMrtas = 2;
-		VtmsVivas = 1;
+		VtmsVivas = 2;
 		//string[] prfsrCubo;
 		RescueTyp = 1;
+		additional = "";
+		foreach(Sprite child in this.GetChildren()){
+			child.CallDeferred("free");
+		}
 	}
 
 	public byte getZindex(string type, short id){
@@ -573,6 +413,22 @@ public class ArenaCoder : Node2D {
 			return true;
 		}
 		return false;
+	}
+
+	public void updateInfoMenu(){
+		GetParent().GetNode<Node2D>("ViewMain").GetNode<Control>("Menu").GetNode<Label>("SunInfoLabel").Text = $"{HoraDoDia[0]}:{HoraDoDia[1]}";
+		if((short.Parse(HoraDoDia[0]) > 18) || (short.Parse(HoraDoDia[0]) <= 6)){
+			GetParent().GetNode<Node2D>("ViewMain").GetNode<Control>("Menu").GetNode<TextureRect>("TimeImage").Texture = (Texture)ResourceLoader.Load($"res://dataFile/2D assets/Outros/moon_phase_96px.png");
+			GetParent().GetNode<Node2D>("ViewMain").GetNode<Control>("Menu").GetNode<Label>("SunInfoLabel").Set("custom_colors/font_color", new Color("#575580"));
+		
+		}else if((short.Parse(HoraDoDia[0]) > 12) && (short.Parse(HoraDoDia[0]) <= 18)){
+			GetParent().GetNode<Node2D>("ViewMain").GetNode<Control>("Menu").GetNode<TextureRect>("TimeImage").Texture = (Texture)ResourceLoader.Load($"res://dataFile/2D assets/Outros/sunset_96px.png");
+			GetParent().GetNode<Node2D>("ViewMain").GetNode<Control>("Menu").GetNode<Label>("SunInfoLabel").Set("custom_colors/font_color", new Color("#3686a0"));
+		
+		}else{
+			GetParent().GetNode<Node2D>("ViewMain").GetNode<Control>("Menu").GetNode<TextureRect>("TimeImage").Texture = (Texture)ResourceLoader.Load($"res://dataFile/2D assets/Outros/summer_96px.png");
+			GetParent().GetNode<Node2D>("ViewMain").GetNode<Control>("Menu").GetNode<Label>("SunInfoLabel").Set("custom_colors/font_color", new Color("#ffd700"));
+		}
 	}
 
 	public void loadFlags(){
@@ -606,6 +462,22 @@ public class ArenaCoder : Node2D {
 
 	public void addTile(Tile CurrentTile, Texture CurrentTexture, byte TypeTileBase, Vector2 OffsetTileBase){
 		if(CurrentTile.type == "null"){return;}
+		Vector2 TilePosition = getTilePos((byte)CurrentTile.x, (byte)CurrentTile.y);
+		bool ComparePosition(string CurrentName){
+			byte pos_x = byte.Parse(coder.reverse(CurrentName.Substring(0, 2)));
+			byte pos_y = byte.Parse(coder.reverse(CurrentName.Substring(2, 2)));
+			return ((pos_x == CurrentTile.x) && (pos_y == CurrentTile.y));
+		}
+		foreach(Sprite child in this.GetChildren()){
+			try{
+				if(ComparePosition(child.Name)){
+					child.CallDeferred("free");
+					break;
+				}
+			}catch{
+				continue;
+			}
+		}
 		Sprite CurrentChild = (Sprite)TileBase_scene.Instance();
 		CurrentChild.GetNode<Sprite>("TileBase").Texture = CurrentTexture;
 		CurrentChild.GetNode<Sprite>("TileBase").Offset = OffsetTileBase;
@@ -620,31 +492,99 @@ public class ArenaCoder : Node2D {
 			CurrentChild.Offset = OffsetTileBase;
 		}
 		CurrentChild.ZIndex = getZindex(CurrentTile.type, CurrentTile.id);
-		CurrentChild.Position = getTilePos((byte)CurrentTile.x, (byte)CurrentTile.y);
+		CurrentChild.Position = TilePosition;
 		CurrentChild.RotationDegrees = CurrentTile.degrees;
-		CurrentChild.Name = coder.encode(CurrentTile);
+		CurrentChild.Name = $"{(string)coder.encode(CurrentTile).Substring(0, 4)}";
+		CurrentChild.Set("Info",  (string)coder.encode(CurrentTile));
 		//Case underline tile:
 		if(UnderLineTiles.Contains($"{CurrentTile.type}{CurrentTile.id}")){
 			CurrentChild.GetNode<Sprite>("Filter").Texture = (Texture)ResourceLoader.Load($"res://dataFile/2D assets/Complementares/Filtro_Azul_Linha.png");
 			GD.Print($"Underline: {CurrentTile.type}{CurrentTile.id}");
 			Area2D CurrentUnderLine = (Area2D)UnderLine_scene.Instance();
 			CurrentUnderLine.GetNode<Sprite>("UnderLineSprite").Texture = (Texture)ResourceLoader.Load($"res://dataFile/2D assets/Ladrilhos/Retas/{CurrentTile.id}_.png");
-			CurrentChild.AddChild(CurrentUnderLine);
+			CallDeferred("add_child", CurrentUnderLine);
 		}
-		AddChild(CurrentChild);
+		CallDeferred("add_child", CurrentChild);
 	}
 
-	public void regenerateArena(string arena_code){
+	public string decodeArena(){
+		string Output = "";
+		foreach(Sprite child in this.GetChildren()){
+			Output += $"{(string)child.Get("Info")},";
+		}
+		Output += $"Descricao: {Descricao}";
+		if(BoolEndCd != false){
+			Output += $",BoolEndCd: {BoolEndCd.ToString()}";
+		}
+		if(BoolNoPos != false){
+			Output += $",BoolNoPos: {BoolNoPos.ToString()}";
+		}
+		if(BoolPrgso != false){
+			Output += $",BoolPrgso: {BoolPrgso.ToString()}";
+		}
+		if(BoolShowM != true){
+			Output += $",BoolShowM: {BoolShowM.ToString()}";
+		}
+		if(BoolSlnha != false){
+			Output += $",BoolSlnha: {BoolSlnha.ToString()}";
+		}
+		if(BoolTSala != false){
+			Output += $",BoolTSala: {BoolTSala.ToString()}";
+		}
+		if(BoolTpFim != false){
+			Output += $",BoolTpFim: {BoolTpFim.ToString()}";
+		}
+		if((HoraDoDia[0] != "12") && (HoraDoDia[1] != "00")){
+			Output += $",HoraDoDia: {HoraDoDia[0]}:{HoraDoDia[1]}";
+		}
+		if(MoveObsto != false){
+			Output += $",MoveObsto: {MoveObsto.ToString()}";
+		}
+		if(ObstacTmp != 30){
+			Output += $",ObstacTmp: {ObstacTmp.ToString()}";
+		}
+		if(PontoDist != false){
+			Output += $",PontoDist: {PontoDist.ToString()}";
+		}
+		if(ResgtePos != 1){
+			Output += $",ResgtePos: {ResgtePos.ToString()}";
+		}
+		if(RobosPerm != "111111"){
+			Output += $",RobosPerm: {RobosPerm}";
+		}
+		if(SaveMrcds != 2){
+			Output += $",SaveMrcds: {SaveMrcds.ToString()}";
+		}
+		if(TempoMxmo != 3){
+			Output += $",TempoMxmo: {TempoMxmo.ToString()}";
+		}
+		if(VitmaPnts != false){
+			Output += $",VitmaPnts: {VitmaPnts.ToString()}";
+		}
+		if(VtmsMrtas != 2){
+			Output += $",VtmsMrtas: {VtmsMrtas.ToString()}";
+		}
+		if(VtmsVivas != 2){
+			Output += $",VtmsVivas: {VtmsVivas.ToString()}";
+		}
+		if(RescueTyp != 1){
+			Output += $",{RescueTyp}";
+		}
+		return Output+additional;
+	}
+
+	public bool regenerateArena(string arena_code){
 		resetArena();
 
 		string[] final_code = coder.filter(arena_code);
 		Tile CurrentTile;
 		foreach (string code in final_code){
 			if(code.Length > 9){
-				if(code.Substring(0, 10) != "Descricao:"){
+				if((code.Substring(0, 10) != "Descricao:")){
 					code.Replace(" ", "");
 				}else{
-					Descricao = code.Substring(10);
+					Descricao = code.Substring(11);
+					continue;
 				}
 			}else{code.Replace(" ", "");}
 			if(code.Length == 9){//Normal tile
@@ -657,6 +597,7 @@ public class ArenaCoder : Node2D {
 					RescueTyp = byte.Parse(code);
 				}catch{
 					GD.Print($"Cant Parse {code} to byte!");
+					return false;
 				}
 
 			}else if(code.Length > 9){//Probaly config code
@@ -708,11 +649,14 @@ public class ArenaCoder : Node2D {
 							BoolTpFim = true;
 							break;
 						case "HoraDoDia:":
-						  string[] HorarioArray = code.Substring(10).Split(':');
-							if (code.Substring(10) == HorarioArray[0]){
+							string hcode = code.Replace(" ", "");
+							string[] HorarioArray = hcode.Substring(10).Split(':');
+							if (hcode.Substring(10) == HorarioArray[0]){
 								HoraDoDia = new string[]{"12", "00"};
 								break;
 							}
+							HorarioArray[0] = short.Parse(HorarioArray[0]).ToString("00");
+							HorarioArray[1] = short.Parse(HorarioArray[1]).ToString("00");
 							HoraDoDia = HorarioArray;
 							break;
 						case "Imagem001:":
@@ -875,17 +819,19 @@ public class ArenaCoder : Node2D {
 							reserve(code);
 							break;
 						default:
-							reserve(code);
+							GD.Print($"No values for {code}");
+							return false;
 							break;
 				  	}
 				}catch (Exception ex){
 					GD.Print($"Error on load switch code: {code}, with exception: {ex.Message}");
-					additional += $",{code}";
+					return false;
 				}
 			}
 		}
 		loadFlags();
-		//updateInfoMenu();
+		updateInfoMenu();
+		return true;		
 	}
 
 	public override void _Ready(){

@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=2]
+[gd_scene load_steps=35 format=2]
 
 [ext_resource path="res://dataCode/ArenaCoder.cs" type="Script" id=1]
 [ext_resource path="res://dataCode/ViewMain.cs" type="Script" id=2]
@@ -6,6 +6,11 @@
 [ext_resource path="res://dataFile/2D assets/Outros/Background_editor.png" type="Texture" id=4]
 [ext_resource path="res://dataFile/2D assets/Complementares/Ladrilho_Atual.png" type="Texture" id=5]
 [ext_resource path="res://dataCode/Menu.cs" type="Script" id=6]
+[ext_resource path="res://dataFile/fonts/UbuntuMono-Regular.ttf" type="DynamicFontData" id=7]
+[ext_resource path="res://dataFile/2D assets/Outros/copy_to_clipboard_96px.png" type="Texture" id=8]
+[ext_resource path="res://dataFile/2D assets/Outros/icons8-arrow-100.png" type="Texture" id=9]
+[ext_resource path="res://dataFile/2D assets/Outros/icons8-stadium-80.png" type="Texture" id=10]
+[ext_resource path="res://dataFile/2D assets/Outros/summer_96px.png" type="Texture" id=11]
 
 [sub_resource type="Animation" id=1]
 resource_name = "InLeftMenu"
@@ -55,19 +60,68 @@ tracks/1/keys = {
 "times": PoolRealArray( 0, 0.5 )
 }
 
+[sub_resource type="StyleBoxEmpty" id=4]
+
+[sub_resource type="StyleBoxFlat" id=24]
+bg_color = Color( 0.196078, 0.196078, 0.196078, 1 )
+
+[sub_resource type="StyleBoxEmpty" id=6]
+
+[sub_resource type="StyleBoxEmpty" id=7]
+
+[sub_resource type="StyleBoxEmpty" id=8]
+
+[sub_resource type="StyleBoxEmpty" id=9]
+
+[sub_resource type="StyleBoxFlat" id=25]
+bg_color = Color( 0.196078, 0.196078, 0.196078, 1 )
+
+[sub_resource type="StyleBoxEmpty" id=11]
+
+[sub_resource type="StyleBoxEmpty" id=12]
+
+[sub_resource type="StyleBoxEmpty" id=13]
+
+[sub_resource type="StyleBoxEmpty" id=14]
+
+[sub_resource type="StyleBoxFlat" id=26]
+bg_color = Color( 0.196078, 0.196078, 0.196078, 1 )
+
+[sub_resource type="StyleBoxEmpty" id=16]
+
+[sub_resource type="StyleBoxEmpty" id=17]
+
+[sub_resource type="StyleBoxEmpty" id=18]
+
+[sub_resource type="StyleBoxEmpty" id=19]
+
+[sub_resource type="StyleBoxEmpty" id=27]
+
+[sub_resource type="StyleBoxEmpty" id=21]
+
+[sub_resource type="StyleBoxEmpty" id=22]
+
+[sub_resource type="StyleBoxEmpty" id=23]
+
+[sub_resource type="DynamicFont" id=3]
+size = 40
+font_data = ExtResource( 7 )
+
 [node name="Arena" type="Node"]
+__meta__ = {
+"_edit_vertical_guides_": [  ]
+}
 
-[node name="Editor" type="Node2D" parent="."]
-script = ExtResource( 1 )
-manual_arena = "0000r0000,0010r6000,0020c2000,1020r6090,2020ra090,3020rv090,4020cc090,4010r9000,4000c3180,3000r4270,2000r3270,1000c2270,1010c1000,2010r1090,3010c0180,3020rv090,3030c9000,6,HoraDoDia: 12,VtmsVivas: 2,VtmsMrtas: 2,TempoMxmo: 3,BoolTpFim: true,BoolEndCd: false,RobosPerm: 111111,BoolShowM: true,BoolTSala: 2,Descricao: Arena gerada no padrão OBR.,BoolMrcdr: true,BoolPrgso: true,BoolSlnha: false,4030r0090,5030c2090,5020r6000,5010r3000,5000c0270,6000c0180,6010rO180,6020rn000,6030c1000,7030r9090,8030rq090,9030cc090,9020ra000,9010r3000,9000c1180,8000r3270,7000c0270,7010c5000,8010c2180,8020rp180,7020c2000,8040c5090,7040r6270,6040r3270,5040r2270,4040r2270,3040c0000,9040rp090,ResgtePos: 1,2030c0270,3070r?000"
-
-[node name="Background" type="Sprite" parent="Editor"]
-position = Vector2( 2035.24, -900 )
+[node name="Background" type="Sprite" parent="."]
+position = Vector2( 1916.44, -1080 )
 scale = Vector2( 2.5, 2.5 )
 texture = ExtResource( 4 )
 
+[node name="Editor" type="Node2D" parent="."]
+script = ExtResource( 1 )
+manual_arena = "0000r$000,0010c7000,1010c5180,1020cj000,2020c1090,2010c5270,3010c7180,3020c7000,4020c0180,4030c1000,5030cl090,5020r8180,5010cc270,6010ci090,6000ck270,7000ck180,7010r8180,7020rU180,7030r1000,7040c2090,6040c0270,6050c5000,7050cf180,7060cn090,6060r&270,5060ch270,5070cl090,0020r(000,0030r(000,1000r(000,1030r(000,2000r(000,2030r(000,3000r(000,3030r(000,4000r(000,4010r(000,5000r(000,6020r(000,6030r(000,4040r(000,4050r(000,5040r(000,5050r(000,6070r(000,7070r(000,1080r?270,BoolEndCd: True,BoolNoPos: False,BoolPrgso: True,BoolShowM: True,BoolSlnha: True,BoolTSala: False,BoolTpFim: True,Descricao: Arena,HoraDoDia: 11:00,MoveObsto: False,ObstacTmp: 50,PontoDist: True,ResgtePos: 1,RobosPerm: 111111,SaveMrcds: 3,TempoMxmo: 4,VitmaPnts: True,VtmsMrtas: 2,VtmsVivas: 2,RescueTyp: 6,Descricao: Arena"
+
 [node name="ViewMain" type="Node2D" parent="."]
-position = Vector2( 1971.23, -388.446 )
 z_index = 5
 script = ExtResource( 2 )
 
@@ -107,6 +161,57 @@ __meta__ = {
 anims/InLeftMenu = SubResource( 1 )
 anims/OutLeftMenu = SubResource( 2 )
 
+[node name="ImportArenaButton" type="Button" parent="ViewMain/Menu/LeftSide"]
+margin_left = 6.0
+margin_top = 18.0
+margin_right = 106.0
+margin_bottom = 118.0
+rect_scale = Vector2( 0.7, 0.7 )
+focus_mode = 0
+custom_styles/hover = SubResource( 4 )
+custom_styles/pressed = SubResource( 24 )
+custom_styles/focus = SubResource( 6 )
+custom_styles/disabled = SubResource( 7 )
+custom_styles/normal = SubResource( 8 )
+enabled_focus_mode = 0
+icon = ExtResource( 9 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="ExportArenaButton" type="Button" parent="ViewMain/Menu/LeftSide"]
+margin_left = 5.0
+margin_top = 111.0
+margin_right = 101.0
+margin_bottom = 207.0
+rect_scale = Vector2( 0.72, 0.72 )
+focus_mode = 0
+custom_styles/hover = SubResource( 9 )
+custom_styles/pressed = SubResource( 25 )
+custom_styles/focus = SubResource( 11 )
+custom_styles/disabled = SubResource( 12 )
+custom_styles/normal = SubResource( 13 )
+enabled_focus_mode = 0
+icon = ExtResource( 8 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="ConfigArenaButton" type="Button" parent="ViewMain/Menu/LeftSide"]
+margin_left = 5.0
+margin_top = 200.0
+margin_right = 85.0
+margin_bottom = 280.0
+rect_scale = Vector2( 0.87, 0.87 )
+focus_mode = 0
+custom_styles/hover = SubResource( 14 )
+custom_styles/pressed = SubResource( 26 )
+custom_styles/focus = SubResource( 16 )
+custom_styles/disabled = SubResource( 17 )
+custom_styles/normal = SubResource( 18 )
+enabled_focus_mode = 0
+icon = ExtResource( 10 )
+
 [node name="ColorRectTop" type="ColorRect" parent="ViewMain/Menu"]
 margin_right = 1920.0
 margin_bottom = 80.0
@@ -115,13 +220,58 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="TextureRect" type="TextureRect" parent="ViewMain/Menu"]
-margin_left = 12.5
+[node name="ToggleMenuButton" type="Button" parent="ViewMain/Menu"]
+margin_left = 13.0
 margin_top = 10.0
-margin_right = 112.5
+margin_right = 113.0
 margin_bottom = 110.0
 rect_scale = Vector2( 0.6, 0.6 )
-texture = ExtResource( 3 )
+focus_mode = 0
+custom_styles/hover = SubResource( 19 )
+custom_styles/pressed = SubResource( 27 )
+custom_styles/focus = SubResource( 21 )
+custom_styles/disabled = SubResource( 22 )
+custom_styles/normal = SubResource( 23 )
+enabled_focus_mode = 0
+icon = ExtResource( 3 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="TimeImage" type="TextureRect" parent="ViewMain/Menu"]
+margin_left = 1750.0
+margin_top = 9.0
+margin_right = 1846.0
+margin_bottom = 105.0
+rect_scale = Vector2( 0.7, 0.7 )
+texture = ExtResource( 11 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="TileInfoLabel" type="Label" parent="ViewMain/Menu"]
+margin_left = 535.0
+margin_top = 15.0
+margin_right = 1385.0
+margin_bottom = 65.0
+custom_fonts/font = SubResource( 3 )
+text = "-"
+align = 1
+valign = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="SunInfoLabel" type="Label" parent="ViewMain/Menu"]
+margin_left = 1810.81
+margin_top = 14.8108
+margin_right = 1910.81
+margin_bottom = 64.8108
+custom_fonts/font = SubResource( 3 )
+custom_colors/font_color = Color( 1, 0.843137, 0, 1 )
+text = "-----"
+align = 2
+valign = 1
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -129,4 +279,7 @@ __meta__ = {
 [node name="Camera" type="Camera2D" parent="ViewMain"]
 current = true
 zoom = Vector2( 2, 2 )
-[connection signal="gui_input" from="ViewMain/Menu/TextureRect" to="ViewMain/Menu" method="_on_TextureRect_gui_input"]
+[connection signal="pressed" from="ViewMain/Menu/LeftSide/ImportArenaButton" to="ViewMain/Menu" method="_on_ImportArenaButton_pressed"]
+[connection signal="pressed" from="ViewMain/Menu/LeftSide/ExportArenaButton" to="ViewMain/Menu" method="_on_ExportArenaButton_pressed"]
+[connection signal="pressed" from="ViewMain/Menu/LeftSide/ConfigArenaButton" to="ViewMain/Menu" method="_on_ConfigArenaButton_pressed"]
+[connection signal="pressed" from="ViewMain/Menu/ToggleMenuButton" to="ViewMain/Menu" method="_on_ToggleMenuButton_pressed"]
