@@ -429,9 +429,19 @@ public class ArenaCoder : Node2D {
 	private PackedScene TileBase_scene = (PackedScene)ResourceLoader.Load("res://dataScenes/TileBase.tscn");
 	private PackedScene UnderLine_scene = (PackedScene)ResourceLoader.Load("res://dataScenes/UnderLine_tile.tscn");
 	private Texture BaseWhite_texture = (Texture)ResourceLoader.Load($"res://dataFile/2D assets/Complementares/Fundo_branco.png");
+	private Texture BaseWhiteNoised_texture = (Texture)ResourceLoader.Load($"res://dataFile/2D assets/Complementares/Fundo_branco_noised.png");
+	
+	//Rescue bot textures
+	private Texture BaseRescueBotNormal_texture = (Texture)ResourceLoader.Load($"res://dataFile/2D assets/Complementares/Fundo_resgate_bot_normal.png");
+	private Texture BaseRescueBotNoised_texture = (Texture)ResourceLoader.Load($"res://dataFile/2D assets/Complementares/Fundo_resgate_bot_noised.png");
+	//Rescue top textures
+	private Texture BaseRescueTopNormal_texture = (Texture)ResourceLoader.Load($"res://dataFile/2D assets/Complementares/Fundo_resgate_top_normal.png");
+	private Texture BaseRescueTopNoised_texture = (Texture)ResourceLoader.Load($"res://dataFile/2D assets/Complementares/Fundo_resgate_top_noised.png");
+
 	public CleitonCoders coder = new CleitonCoders();
 
 	//Geral
+	bool NoisedTiles = true;
 	Tile RescueDat = new Tile(0, 0, 0, "null", 0);
 	Tile EndingDat = new Tile(0, 0, 0, "null", 0);
 	Vector2 OffsetRescue =  new Vector2(10, 256);
@@ -568,12 +578,16 @@ public class ArenaCoder : Node2D {
 	public void loadFlags(){
 		if(RescueDat.type != "null"){
 			if(RescueTyp != 0){
-				addTile(RescueDat, (Texture)ResourceLoader.Load($"res://dataFile/2D assets/Ladrilhos/Retas/{RescueDat.id}_{RescueTyp}.png"), false, OffsetRescue);
+				addTile(RescueDat, (Texture)ResourceLoader.Load($"res://dataFile/2D assets/Ladrilhos/Retas/{RescueDat.id}_{RescueTyp}.png"), 3, OffsetRescue);
 			}else{
-				addTile(RescueDat, (Texture)ResourceLoader.Load($"res://dataFile/2D assets/Ladrilhos/Retas/{RescueDat.id}_{RescueTyp}.png"), false,  new Vector2(0, 0));
+				addTile(RescueDat, (Texture)ResourceLoader.Load($"res://dataFile/2D assets/Ladrilhos/Retas/{RescueDat.id}_{RescueTyp}.png"), 2,  new Vector2(0, 0));
 			}
 			
 		}
+	}
+
+	public Texture getBaseTexture(){
+		return (NoisedTiles) ? BaseWhiteNoised_texture : BaseWhite_texture;
 	}
 
 	public Texture loadTextureTile(string type, short id){
@@ -585,18 +599,25 @@ public class ArenaCoder : Node2D {
 			}
 		}catch{
 			GD.Print($"Error on import tile with type {type} and id: {id}");
-			return BaseWhite_texture;
+			return getBaseTexture();
 		}
-		return BaseWhite_texture;
+		return getBaseTexture();
 	}
-		
-	public void addTile(Tile CurrentTile, Texture CurrentTexture, bool SetTileBase, Vector2 OffsetTileBase){
+
+	public void addTile(Tile CurrentTile, Texture CurrentTexture, byte TypeTileBase, Vector2 OffsetTileBase){
 		if(CurrentTile.type == "null"){return;}
 		Sprite CurrentChild = (Sprite)TileBase_scene.Instance();
 		CurrentChild.GetNode<Sprite>("TileBase").Texture = CurrentTexture;
 		CurrentChild.GetNode<Sprite>("TileBase").Offset = OffsetTileBase;
-		if(SetTileBase){
-			CurrentChild.Texture = BaseWhite_texture;
+		if(TypeTileBase == 1){
+			CurrentChild.Texture = getBaseTexture();
+			CurrentChild.Offset = OffsetTileBase;
+		}else if(TypeTileBase  == 2){
+			CurrentChild.Texture = (NoisedTiles) ? BaseRescueBotNoised_texture : BaseRescueBotNormal_texture;
+			CurrentChild.Offset = OffsetTileBase;
+		}else if(TypeTileBase  == 3){
+			CurrentChild.Texture = (NoisedTiles) ? BaseRescueTopNoised_texture : BaseRescueTopNormal_texture;
+			CurrentChild.Offset = OffsetTileBase;
 		}
 		CurrentChild.ZIndex = getZindex(CurrentTile.type, CurrentTile.id);
 		CurrentChild.Position = getTilePos((byte)CurrentTile.x, (byte)CurrentTile.y);
@@ -629,7 +650,7 @@ public class ArenaCoder : Node2D {
 			if(code.Length == 9){//Normal tile
 				CurrentTile = coder.decode(code);
 				if(filterFlags(CurrentTile)){continue;}
-				addTile(CurrentTile, loadTextureTile(CurrentTile.type, CurrentTile.id), true, new Vector2(0, 0));
+				addTile(CurrentTile, loadTextureTile(CurrentTile.type, CurrentTile.id), 1, new Vector2(0, 0));
 
 			}else if(code.Length == 1){//Probaly config code
 				try{

@@ -1,32 +1,77 @@
-[gd_scene load_steps=7 format=2]
+[gd_scene load_steps=9 format=2]
 
 [ext_resource path="res://dataCode/ArenaCoder.cs" type="Script" id=1]
 [ext_resource path="res://dataCode/ViewMain.cs" type="Script" id=2]
-[ext_resource path="res://dataFile/fonts/UbuntuMono-Italic.ttf" type="DynamicFontData" id=3]
+[ext_resource path="res://dataFile/2D assets/Outros/icons8-menu-100.png" type="Texture" id=3]
 [ext_resource path="res://dataFile/2D assets/Outros/Background_editor.png" type="Texture" id=4]
 [ext_resource path="res://dataFile/2D assets/Complementares/Ladrilho_Atual.png" type="Texture" id=5]
+[ext_resource path="res://dataCode/Menu.cs" type="Script" id=6]
 
-[sub_resource type="DynamicFont" id=1]
-size = 35
-outline_color = Color( 0, 0, 0, 1 )
-font_data = ExtResource( 3 )
+[sub_resource type="Animation" id=1]
+resource_name = "InLeftMenu"
+length = 0.5
+tracks/0/type = "bezier"
+tracks/0/path = NodePath(".:rect_position:x")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"points": PoolRealArray( -80, -0.25, 0, 0.25, 0, 0, -0.25, 0, 0.25, 0 ),
+"times": PoolRealArray( 0, 0.5 )
+}
+tracks/1/type = "bezier"
+tracks/1/path = NodePath(".:rect_position:y")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"points": PoolRealArray( 80, -0.25, 0, 0.25, 0, 80, -0.25, 0, 0.25, 0 ),
+"times": PoolRealArray( 0, 0.5 )
+}
+
+[sub_resource type="Animation" id=2]
+resource_name = "OutLeftMenu"
+length = 0.5
+tracks/0/type = "bezier"
+tracks/0/path = NodePath(".:rect_position:x")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"points": PoolRealArray( 0, -0.25, 0, 0.25, 0, -80, -0.25, 0, 0.25, 0 ),
+"times": PoolRealArray( 0, 0.5 )
+}
+tracks/1/type = "bezier"
+tracks/1/path = NodePath(".:rect_position:y")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"points": PoolRealArray( 80, -0.25, 0, 0.25, 0, 80, -0.25, 0, 0.25, 0 ),
+"times": PoolRealArray( 0, 0.5 )
+}
 
 [node name="Arena" type="Node"]
 
 [node name="Editor" type="Node2D" parent="."]
 script = ExtResource( 1 )
-manual_arena = "0000r0000,0020ch000,1020cl090,1000cn270,3000cg270,3010r<000,3020cg000,4020rb270,5010c1090,5020r/090,5030r0090,2010c7270,2020c6090,4000rb270,5000c2180,5020r/090,4,VtmsVivas: 2,VtmsMrtas: 3,BoolTpFim: true,BoolShowM: true,BoolTSala: 2,Descricao: Arena gerada no padrão OBR.,BoolSlnha: false,BoolMrcdr: false,1040r?270,6000c3270,6010rn180,7000c5270,7010r4000,6020c9090,6030c2090,BoolEndCd: true,RobosPerm: 111110,HoraDoDia: 9,TempoMxmo: 4,BoolPrgso: true,7020c7180,7030c6090,0010c8270,8000c1180,8010rO000,8020c6090,1010c8090,4010r0270,2000c1180,8030cm180,ResgtePos: 1"
+manual_arena = "0000r0000,0010r6000,0020c2000,1020r6090,2020ra090,3020rv090,4020cc090,4010r9000,4000c3180,3000r4270,2000r3270,1000c2270,1010c1000,2010r1090,3010c0180,3020rv090,3030c9000,6,HoraDoDia: 12,VtmsVivas: 2,VtmsMrtas: 2,TempoMxmo: 3,BoolTpFim: true,BoolEndCd: false,RobosPerm: 111111,BoolShowM: true,BoolTSala: 2,Descricao: Arena gerada no padrão OBR.,BoolMrcdr: true,BoolPrgso: true,BoolSlnha: false,4030r0090,5030c2090,5020r6000,5010r3000,5000c0270,6000c0180,6010rO180,6020rn000,6030c1000,7030r9090,8030rq090,9030cc090,9020ra000,9010r3000,9000c1180,8000r3270,7000c0270,7010c5000,8010c2180,8020rp180,7020c2000,8040c5090,7040r6270,6040r3270,5040r2270,4040r2270,3040c0000,9040rp090,ResgtePos: 1,2030c0270,3070r?000"
 
 [node name="Background" type="Sprite" parent="Editor"]
-position = Vector2( 2040, -900 )
-scale = Vector2( 2, 2 )
+position = Vector2( 2035.24, -900 )
+scale = Vector2( 2.5, 2.5 )
 texture = ExtResource( 4 )
 
 [node name="ViewMain" type="Node2D" parent="."]
 position = Vector2( 1971.23, -388.446 )
 z_index = 5
 script = ExtResource( 2 )
-speed = 25
+
+[node name="Tween" type="Tween" parent="ViewMain"]
 
 [node name="CurrestTileMark" type="Sprite" parent="ViewMain"]
 texture = ExtResource( 5 )
@@ -34,26 +79,49 @@ texture = ExtResource( 5 )
 [node name="Menu" type="Control" parent="ViewMain"]
 margin_left = -1920.0
 margin_top = -1080.0
-margin_right = -1820.0
+margin_right = 0.00012207
+margin_bottom = -1000.0
 rect_scale = Vector2( 2, 2 )
+script = ExtResource( 6 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="Infos" type="Label" parent="ViewMain/Menu"]
-margin_left = 100.0
-margin_right = 600.0
-margin_bottom = 800.0
-custom_fonts/font = SubResource( 1 )
-custom_colors/font_color = Color( 1, 0, 0, 1 )
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="ColorRect" type="ColorRect" parent="ViewMain/Menu"]
-margin_right = 100.0
+[node name="LeftSide" type="Control" parent="ViewMain/Menu"]
+margin_top = 80.0
+margin_right = 80.0
 margin_bottom = 1080.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="ColorRectLeft" type="ColorRect" parent="ViewMain/Menu/LeftSide"]
+margin_right = 80.0
+margin_bottom = 1000.0
 color = Color( 0.0588235, 0.0588235, 0.0588235, 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="ViewMain/Menu/LeftSide"]
+anims/InLeftMenu = SubResource( 1 )
+anims/OutLeftMenu = SubResource( 2 )
+
+[node name="ColorRectTop" type="ColorRect" parent="ViewMain/Menu"]
+margin_right = 1920.0
+margin_bottom = 80.0
+color = Color( 0.0784314, 0.0784314, 0.0784314, 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="TextureRect" type="TextureRect" parent="ViewMain/Menu"]
+margin_left = 12.5
+margin_top = 10.0
+margin_right = 112.5
+margin_bottom = 110.0
+rect_scale = Vector2( 0.6, 0.6 )
+texture = ExtResource( 3 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -61,3 +129,4 @@ __meta__ = {
 [node name="Camera" type="Camera2D" parent="ViewMain"]
 current = true
 zoom = Vector2( 2, 2 )
+[connection signal="gui_input" from="ViewMain/Menu/TextureRect" to="ViewMain/Menu" method="_on_TextureRect_gui_input"]
