@@ -60,10 +60,12 @@ tracks/1/keys = {
 "times": PoolRealArray( 0, 0.5 )
 }
 
-[sub_resource type="StyleBoxEmpty" id=4]
+[sub_resource type="StyleBoxEmpty" id=3]
 
-[sub_resource type="StyleBoxFlat" id=24]
+[sub_resource type="StyleBoxFlat" id=4]
 bg_color = Color( 0.196078, 0.196078, 0.196078, 1 )
+
+[sub_resource type="StyleBoxEmpty" id=5]
 
 [sub_resource type="StyleBoxEmpty" id=6]
 
@@ -71,10 +73,10 @@ bg_color = Color( 0.196078, 0.196078, 0.196078, 1 )
 
 [sub_resource type="StyleBoxEmpty" id=8]
 
-[sub_resource type="StyleBoxEmpty" id=9]
-
-[sub_resource type="StyleBoxFlat" id=25]
+[sub_resource type="StyleBoxFlat" id=9]
 bg_color = Color( 0.196078, 0.196078, 0.196078, 1 )
+
+[sub_resource type="StyleBoxEmpty" id=10]
 
 [sub_resource type="StyleBoxEmpty" id=11]
 
@@ -82,10 +84,10 @@ bg_color = Color( 0.196078, 0.196078, 0.196078, 1 )
 
 [sub_resource type="StyleBoxEmpty" id=13]
 
-[sub_resource type="StyleBoxEmpty" id=14]
-
-[sub_resource type="StyleBoxFlat" id=26]
+[sub_resource type="StyleBoxFlat" id=14]
 bg_color = Color( 0.196078, 0.196078, 0.196078, 1 )
+
+[sub_resource type="StyleBoxEmpty" id=15]
 
 [sub_resource type="StyleBoxEmpty" id=16]
 
@@ -95,15 +97,13 @@ bg_color = Color( 0.196078, 0.196078, 0.196078, 1 )
 
 [sub_resource type="StyleBoxEmpty" id=19]
 
-[sub_resource type="StyleBoxEmpty" id=27]
+[sub_resource type="StyleBoxEmpty" id=20]
 
 [sub_resource type="StyleBoxEmpty" id=21]
 
 [sub_resource type="StyleBoxEmpty" id=22]
 
-[sub_resource type="StyleBoxEmpty" id=23]
-
-[sub_resource type="DynamicFont" id=3]
+[sub_resource type="DynamicFont" id=23]
 size = 40
 font_data = ExtResource( 7 )
 
@@ -119,7 +119,7 @@ texture = ExtResource( 4 )
 
 [node name="Editor" type="Node2D" parent="."]
 script = ExtResource( 1 )
-manual_arena = "0000r$000,0010c7000,1010c5180,1020cj000,2020c1090,2010c5270,3010c7180,3020c7000,4020c0180,4030c1000,5030cl090,5020r8180,5010cc270,6010ci090,6000ck270,7000ck180,7010r8180,7020rU180,7030r1000,7040c2090,6040c0270,6050c5000,7050cf180,7060cn090,6060r&270,5060ch270,5070cl090,0020r(000,0030r(000,1000r(000,1030r(000,2000r(000,2030r(000,3000r(000,3030r(000,4000r(000,4010r(000,5000r(000,6020r(000,6030r(000,4040r(000,4050r(000,5040r(000,5050r(000,6070r(000,7070r(000,1080r?270,BoolEndCd: True,BoolNoPos: False,BoolPrgso: True,BoolShowM: True,BoolSlnha: True,BoolTSala: False,BoolTpFim: True,Descricao: Arena,HoraDoDia: 11:00,MoveObsto: False,ObstacTmp: 50,PontoDist: True,ResgtePos: 1,RobosPerm: 111111,SaveMrcds: 3,TempoMxmo: 4,VitmaPnts: True,VtmsMrtas: 2,VtmsVivas: 2,RescueTyp: 6,Descricao: Arena"
+manual_arena = "0000r$000,0010c7000,1010c5180,1020cj000,2020c1090,2010c5270,3010c7180,3020c7000,4020c0180,4030c1000,5030cl090,5020r8180,5010cc270,6010ci090,6000ck270,7000ck180,7010r8180,7020rU180,7030r1000,7040c2090,6040c0270,6050c5000,7050cf180,7060cn090,6060r&270,5060ch270,5070cl090,0020r(000,0030r(000,1000r(000,1030r(000,2000r(000,2030r(000,3000r(000,3030r(000,4000r(000,4010r(000,5000r(000,6020r(000,6030r(000,4040r(000,4050r(000,5040r(000,5050r(000,6070r(000,7070r(000,1080r?270,BoolEndCd: True,BoolNoPos: False,BoolPrgso: True,BoolShowM: True,BoolSlnha: True,BoolTSala: False,BoolTpFim: True,Descricao: Arena,HoraDoDia: 11:00,MoveObsto: False,ObstacTmp: 50,PontoDist: True,ResgtePos: 1,RobosPerm: 111111,SaveMrcds: 3,TempoMxmo: 4,VitmaPnts: True,VtmsMrtas: 2,VtmsVivas: 2,,Descricao: Arena"
 
 [node name="ViewMain" type="Node2D" parent="."]
 z_index = 5
@@ -168,11 +168,11 @@ margin_right = 106.0
 margin_bottom = 118.0
 rect_scale = Vector2( 0.7, 0.7 )
 focus_mode = 0
-custom_styles/hover = SubResource( 4 )
-custom_styles/pressed = SubResource( 24 )
-custom_styles/focus = SubResource( 6 )
-custom_styles/disabled = SubResource( 7 )
-custom_styles/normal = SubResource( 8 )
+custom_styles/hover = SubResource( 3 )
+custom_styles/pressed = SubResource( 4 )
+custom_styles/focus = SubResource( 5 )
+custom_styles/disabled = SubResource( 6 )
+custom_styles/normal = SubResource( 7 )
 enabled_focus_mode = 0
 icon = ExtResource( 9 )
 __meta__ = {
@@ -186,11 +186,11 @@ margin_right = 101.0
 margin_bottom = 207.0
 rect_scale = Vector2( 0.72, 0.72 )
 focus_mode = 0
-custom_styles/hover = SubResource( 9 )
-custom_styles/pressed = SubResource( 25 )
-custom_styles/focus = SubResource( 11 )
-custom_styles/disabled = SubResource( 12 )
-custom_styles/normal = SubResource( 13 )
+custom_styles/hover = SubResource( 8 )
+custom_styles/pressed = SubResource( 9 )
+custom_styles/focus = SubResource( 10 )
+custom_styles/disabled = SubResource( 11 )
+custom_styles/normal = SubResource( 12 )
 enabled_focus_mode = 0
 icon = ExtResource( 8 )
 __meta__ = {
@@ -204,11 +204,11 @@ margin_right = 85.0
 margin_bottom = 280.0
 rect_scale = Vector2( 0.87, 0.87 )
 focus_mode = 0
-custom_styles/hover = SubResource( 14 )
-custom_styles/pressed = SubResource( 26 )
-custom_styles/focus = SubResource( 16 )
-custom_styles/disabled = SubResource( 17 )
-custom_styles/normal = SubResource( 18 )
+custom_styles/hover = SubResource( 13 )
+custom_styles/pressed = SubResource( 14 )
+custom_styles/focus = SubResource( 15 )
+custom_styles/disabled = SubResource( 16 )
+custom_styles/normal = SubResource( 17 )
 enabled_focus_mode = 0
 icon = ExtResource( 10 )
 
@@ -227,11 +227,11 @@ margin_right = 113.0
 margin_bottom = 110.0
 rect_scale = Vector2( 0.6, 0.6 )
 focus_mode = 0
-custom_styles/hover = SubResource( 19 )
-custom_styles/pressed = SubResource( 27 )
-custom_styles/focus = SubResource( 21 )
-custom_styles/disabled = SubResource( 22 )
-custom_styles/normal = SubResource( 23 )
+custom_styles/hover = SubResource( 18 )
+custom_styles/pressed = SubResource( 19 )
+custom_styles/focus = SubResource( 20 )
+custom_styles/disabled = SubResource( 21 )
+custom_styles/normal = SubResource( 22 )
 enabled_focus_mode = 0
 icon = ExtResource( 3 )
 __meta__ = {
@@ -254,7 +254,7 @@ margin_left = 535.0
 margin_top = 15.0
 margin_right = 1385.0
 margin_bottom = 65.0
-custom_fonts/font = SubResource( 3 )
+custom_fonts/font = SubResource( 23 )
 text = "-"
 align = 1
 valign = 1
@@ -267,7 +267,7 @@ margin_left = 1810.81
 margin_top = 14.8108
 margin_right = 1910.81
 margin_bottom = 64.8108
-custom_fonts/font = SubResource( 3 )
+custom_fonts/font = SubResource( 23 )
 custom_colors/font_color = Color( 1, 0.843137, 0, 1 )
 text = "-----"
 align = 2

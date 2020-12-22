@@ -3,22 +3,23 @@ using System.Collections.Generic;
 using System;
 using System.Linq;
 
-public class Tile{
-	public short x{get;set;}
-	public short y{get;set;}
-	public short degrees{get;set;}
-	public string type{get;set;}
-	public short id{get;set;}
-	public Tile(short x, short y, short degrees, string type, short id){
-		this.x = x;
-		this.y = y;
-		this.degrees = degrees;
-		this.type = type;
-		this.id = id;
+public class ArenaCoder : Node2D {
+	//Classes:
+	public class Tile{
+		public short x{get;set;}
+		public short y{get;set;}
+		public short degrees{get;set;}
+		public string type{get;set;}
+		public short id{get;set;}
+		public Tile(short x, short y, short degrees, string type, short id){
+			this.x = x;
+			this.y = y;
+			this.degrees = degrees;
+			this.type = type;
+			this.id = id;
+		}
 	}
-}
 
-public class CleitonCoders{
 	public string reverse(string s){
 		char[] arr = s.ToCharArray();
 		Array.Reverse(arr);
@@ -31,13 +32,35 @@ public class CleitonCoders{
 		return final_code;
 	}
 
-	public int GetIndex(string c) {
+	public int getIndex(string c) {
 		Dictionary<string, int> BaseDecoder = this.tileDictionary();
 		int result = 777;
 		try{
 			result = (byte)BaseDecoder[c];
 		}catch{
 			result = 0;
+		}
+		return result;
+	}
+
+	public string getStraightName(int index){
+		Dictionary<int, string> BaseDecoder = this.straightTileDictionary();
+		string result = "Penis";
+		try{
+			result = BaseDecoder[index];
+		}catch{
+			result = "Não encontrado";
+		}
+		return result;
+	}
+
+	public string getCurvedName(int index){
+		Dictionary<int, string> BaseDecoder = this.curvedTileDictionary();
+		string result = "sim!";
+		try{
+			result = BaseDecoder[index];
+		}catch{
+			result = "Não encontrado";
 		}
 		return result;
 	}
@@ -64,7 +87,7 @@ public class CleitonCoders{
 			pos_y = byte.Parse(reverse(code.Substring(2, 2)));
 			direction = short.Parse(code.Substring(6, 3));
 			compl0 = code.Substring(4, 1);
-			compl1 = (short)GetIndex(code.Substring(5, 1));
+			compl1 = (short)getIndex(code.Substring(5, 1));
 		}catch{
 			GD.Print($"The code: {code} is not a tile code! Returning emply tile");
 			return new Tile(0, 0, 0, "r", 71);
@@ -256,9 +279,148 @@ public class CleitonCoders{
 			{"Ó", 83}
 		};
 	}
-}
 
-public class ArenaCoder : Node2D {
+	public Dictionary<int, string> straightTileDictionary(){
+		return new Dictionary<int, string>{
+			{993, "<b>======== Especiais ========</b>"},
+			{75, "Ladrilho de início"},
+			{77, "Ladrilho de início com paredes"},
+			{76, "Ladrilho de início sem linha"},
+			{78, "Ladrilho final"},
+			{80, "Ladrilho final com paredes"},
+			{79, "Ladrilho final sem linha"},
+			{71, "Ladrilho Vazio"},
+			{73, "Terceira Sala"},
+			{999, "<b>======== Sem pontuação ========</b>"},
+			{72, "Entrada sala de resgate"},
+			{82, "Escadaria"},
+			{0, "Linha"},
+			{51, "Linha com V"},
+			{56, "Meia Lua"},
+			{3, "Zigue-Zague"},
+			{5, "Zigue-Zague 90°"},
+			{68, "Zigue-Zague 90° Unilateral"},
+			{57, "Zigue-Zague Suave"},
+			{60, "Zigue-Zague Suave Unilateral"},
+			{63, "Zigue-Zague Unilateral"},
+			{998, "<b>======== Com pontuação ========</b>"},
+			{33, "2 Gaps"},
+			{18, "4 Retornos"},
+			{6, "Encruzilhada C"},
+			{50, "Encruzilhada C com Gap"},
+			{24, "Encruzilhada Reta"},
+			{25, "Encruzilhada T Reta"},
+			{74, "Gangorra"},
+			{1, "Gap"},
+			{32, "Gap e Redutor"},
+			{35, "Gap e Redutor Inclinado"},
+			{4, "Obstáculo"},
+			{7, "Obstáculo Sem-Linhas"},
+			{23, "Portal"},
+			{2, "Redutor"},
+			{34, "Redutor Inclinado"},
+			{22, "Redutores"},
+			{36, "Redutores Inclinados"},
+			{81, "Rotatória"},
+			{37, "Zigue-Zague com Redutor"},
+			{997, "<b>======== Elevadas sem pontuação ========</b>"},
+			{52, "Linha com V Elevado"},
+			{53, "Linha com V Elevado com Linha Inferior"},
+			{26, "Linha Elevada com Linha Inferior"},
+			{8, "Rampa"},
+			{12, "Reta Elevada"},
+			{17, "Zigue-Zague 90° Elevado"},
+			{31, "Zigue-Zague 90° Elevado com Linha Inferior"},
+			{69, "Zigue-Zague 90° Unilateral Elevado "},
+			{70, "Zigue-Zague 90° Unilateral Elevado com Linha Inferior"},
+			{16, "Zigue-Zague Elevado"},
+			{30, "Zigue-Zague Elevado com Linha Inferior"},
+			{58, "Zigue-Zague Suave Elevado"},
+			{59, "Zigue-Zague Suave Elevado com Linha Inferior"},
+			{61, "Zigue-Zague Suave Unilateral Elevado"},
+			{62, "Zigue-Zague Suave Unilateral Elevado com Linha Inferior"},
+			{64, "Zigue-Zague Unilateral Elevado"},
+			{65, "Zigue-Zague Unilateral Elevado com Linha Inferior"},
+			{996, "<b>======== Elevadas com pontuação ========</b>"},
+			{39, "2 Gaps Elevados"},
+			{38, "2 Gaps Elevados com Linha Inferior"},
+			{45, "Gap e Redutor Elevado"},
+			{44, "Gap e Redutor Elevado com Linha Inferior"},
+			{43, "Gap e Redutor Inclinado Elevado"},
+			{42, "Gap e Redutor Inclinado Elevado com Linha Inferior"},
+			{13, "Gap Elevado"},
+			{27, "Gap Elevado com Linha Inferior"},
+			{9, "Rampa com Gap"},
+			{10, "Rampa com Redutor"},
+			{11, "Rampa com Redutores"},
+			{14, "Redutor Elevado"},
+			{28, "Redutor Elevado com Linha Inferior"},
+			{41, "Redutor Inclinado Elevado"},
+			{40, "Redutor Inclinado Elevado com Linha Inferior"},
+			{15, "Redutores Elevados"},
+			{29, "Redutores Elevados com Linha Inferior"},
+			{47, "Redutores Inclinados Elevados"},
+			{46, "Redutores Inclinados Elevados com Linha Inferior"},
+			{49, "Zigue-Zague com Redutor Elevado"},
+			{48, "Zigue-Zague com Redutor Elevado com Linha Inferior"},
+			{995, "<b>======== Peças de labirinto ========</b>"},
+			{21, "3 Paredes"},
+			{20, "Parede"},
+			{19, "Paredes Laterais"},
+			{994, "<b>======== Conjunto de peças ========</b>"},
+			{54, "Conjunto Bilateral"},
+			{55, "Conjunto Bilateral Elevado"},
+			{66, "Conjunto Unilateral"},
+			{67, "Conjunto Unilateral Elevado"
+			}
+		};
+	}
+
+	public Dictionary<int, string> curvedTileDictionary(){
+		return new Dictionary<int, string>{
+			{993, "<b>======== Especiais ========</b>"},
+			{22, "Ladrilho Vazio"},
+			{999, "<b>======== Sem pontuação ========</b>"},
+			{1, "Curva 90°"},
+			{3, "Curva Complexa"},
+			{15, "Curva Degrau"},
+			{17, "Curva Degrau Suave"},
+			{24, "Curva Diagonal"},
+			{0, "Curva Suave"},
+			{30, "Dupla de Curvas Degrau"},
+			{29, "Dupla de Curvas Degrau Suave"},
+			{31, "Dupla de Curvas Diagonal"},
+			{32, "Dupla de Curvas Suave"},
+			{25, "Rotatória Aberta"},
+			{998, "<b>======== Com pontuação ========</b>"},
+			{4, "Encruzilhada C"},
+			{14, "Encruzilhada C com gap"},
+			{2, "Encruzilhada Circular"},
+			{7, "Encruzilhada com Verde"},
+			{8, "Encruzilhada Dupla"},
+			{9, "Encruzilhada Dupla Cruzada"},
+			{5, "Encruzilhada T"},
+			{6, "Encruzilhada T Dupla"},
+			{10, "Encruzilhada Tripla"},
+			{23, "Obstáculo"},
+			{27, "Rotatória Com Curva 90°"},
+			{26, "Rotatória Com Degraus"},
+			{28, "Rotatória Externa"},
+			{997, "<b>======== Elevadas sem pontuação ========</b>"},
+			{12, "Curva 90° Elevada"},
+			{16, "Curva Degrau Elevada"},
+			{18, "Curva Degrau Suave Elevada"},
+			{13, "Curva Suave Elevada"},
+			{995, "<b>======== Peças de labirinto ========</b>"},
+			{11, "Parede Curvada"},
+			{994, "<b>======== Conjunto de peças ========</b>"},
+			{21, "Conjunto Encruzilhadas Simples"},
+			{19, "Conjunto Simples"},
+			{20, "Conjunto Simples Elevado"
+			}
+		};
+	}
+	//
 
 	[Export] public string manual_arena = "";
 
@@ -273,8 +435,6 @@ public class ArenaCoder : Node2D {
 	//Rescue top textures
 	private Texture BaseRescueTopNormal_texture = (Texture)ResourceLoader.Load($"res://dataFile/2D assets/Complementares/Fundo_resgate_top_normal.png");
 	private Texture BaseRescueTopNoised_texture = (Texture)ResourceLoader.Load($"res://dataFile/2D assets/Complementares/Fundo_resgate_top_noised.png");
-
-	public CleitonCoders coder = new CleitonCoders();
 
 	//Geral
 	bool NoisedTiles = true;
@@ -464,8 +624,8 @@ public class ArenaCoder : Node2D {
 		if(CurrentTile.type == "null"){return;}
 		Vector2 TilePosition = getTilePos((byte)CurrentTile.x, (byte)CurrentTile.y);
 		bool ComparePosition(string CurrentName){
-			byte pos_x = byte.Parse(coder.reverse(CurrentName.Substring(0, 2)));
-			byte pos_y = byte.Parse(coder.reverse(CurrentName.Substring(2, 2)));
+			byte pos_x = byte.Parse(reverse(CurrentName.Substring(0, 2)));
+			byte pos_y = byte.Parse(reverse(CurrentName.Substring(2, 2)));
 			return ((pos_x == CurrentTile.x) && (pos_y == CurrentTile.y));
 		}
 		foreach(Sprite child in this.GetChildren()){
@@ -494,8 +654,8 @@ public class ArenaCoder : Node2D {
 		CurrentChild.ZIndex = getZindex(CurrentTile.type, CurrentTile.id);
 		CurrentChild.Position = TilePosition;
 		CurrentChild.RotationDegrees = CurrentTile.degrees;
-		CurrentChild.Name = $"{(string)coder.encode(CurrentTile).Substring(0, 4)}";
-		CurrentChild.Set("Info",  (string)coder.encode(CurrentTile));
+		CurrentChild.Name = $"{(string)encode(CurrentTile).Substring(0, 4)}";
+		CurrentChild.Set("Info",  (string)encode(CurrentTile));
 		//Case underline tile:
 		if(UnderLineTiles.Contains($"{CurrentTile.type}{CurrentTile.id}")){
 			CurrentChild.GetNode<Sprite>("Filter").Texture = (Texture)ResourceLoader.Load($"res://dataFile/2D assets/Complementares/Filtro_Azul_Linha.png");
@@ -576,7 +736,7 @@ public class ArenaCoder : Node2D {
 	public bool regenerateArena(string arena_code){
 		resetArena();
 
-		string[] final_code = coder.filter(arena_code);
+		string[] final_code = filter(arena_code);
 		Tile CurrentTile;
 		foreach (string code in final_code){
 			if(code.Length > 9){
@@ -588,7 +748,7 @@ public class ArenaCoder : Node2D {
 				}
 			}else{code.Replace(" ", "");}
 			if(code.Length == 9){//Normal tile
-				CurrentTile = coder.decode(code);
+				CurrentTile = decode(code);
 				if(filterFlags(CurrentTile)){continue;}
 				addTile(CurrentTile, loadTextureTile(CurrentTile.type, CurrentTile.id), 1, new Vector2(0, 0));
 
