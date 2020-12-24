@@ -2,20 +2,22 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/Fundo_branco.png-8cfc999928d1b983d512f2c0b5c7f93f.stex"
+path.s3tc="res://.import/Fundo_branco.png-8cfc999928d1b983d512f2c0b5c7f93f.s3tc.stex"
+path.etc="res://.import/Fundo_branco.png-8cfc999928d1b983d512f2c0b5c7f93f.etc.stex"
 metadata={
-"vram_texture": false
+"imported_formats": [ "s3tc", "etc" ],
+"vram_texture": true
 }
 
 [deps]
 
 source_file="res://dataFile/2D assets/Complementares/Fundo_branco.png"
-dest_files=[ "res://.import/Fundo_branco.png-8cfc999928d1b983d512f2c0b5c7f93f.stex" ]
+dest_files=[ "res://.import/Fundo_branco.png-8cfc999928d1b983d512f2c0b5c7f93f.s3tc.stex", "res://.import/Fundo_branco.png-8cfc999928d1b983d512f2c0b5c7f93f.etc.stex" ]
 
 [params]
 
-compress/mode=0
-compress/lossy_quality=0.7
+compress/mode=2
+compress/lossy_quality=0.8
 compress/hdr_mode=0
 compress/bptc_ldr=0
 compress/normal_map=0

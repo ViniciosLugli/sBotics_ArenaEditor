@@ -1,9 +1,8 @@
-[gd_scene load_steps=35 format=2]
+[gd_scene load_steps=34 format=2]
 
 [ext_resource path="res://dataCode/ArenaCoder.cs" type="Script" id=1]
 [ext_resource path="res://dataCode/ViewMain.cs" type="Script" id=2]
 [ext_resource path="res://dataFile/2D assets/Outros/icons8-menu-100.png" type="Texture" id=3]
-[ext_resource path="res://dataFile/2D assets/Outros/Background_editor.png" type="Texture" id=4]
 [ext_resource path="res://dataFile/2D assets/Complementares/Ladrilho_Atual.png" type="Texture" id=5]
 [ext_resource path="res://dataCode/Menu.cs" type="Script" id=6]
 [ext_resource path="res://dataFile/fonts/UbuntuMono-Regular.ttf" type="DynamicFontData" id=7]
@@ -112,14 +111,9 @@ __meta__ = {
 "_edit_vertical_guides_": [  ]
 }
 
-[node name="Background" type="Sprite" parent="."]
-position = Vector2( 1916.44, -1080 )
-scale = Vector2( 2.5, 2.5 )
-texture = ExtResource( 4 )
-
 [node name="Editor" type="Node2D" parent="."]
 script = ExtResource( 1 )
-manual_arena = "0000r$000,0010c7000,1010c5180,1020cj000,2020c1090,2010c5270,3010c7180,3020c7000,4020c0180,4030c1000,5030cl090,5020r8180,5010cc270,6010ci090,6000ck270,7000ck180,7010r8180,7020rU180,7030r1000,7040c2090,6040c0270,6050c5000,7050cf180,7060cn090,6060r&270,5060ch270,5070cl090,0020r(000,0030r(000,1000r(000,1030r(000,2000r(000,2030r(000,3000r(000,3030r(000,4000r(000,4010r(000,5000r(000,6020r(000,6030r(000,4040r(000,4050r(000,5040r(000,5050r(000,6070r(000,7070r(000,1080r?270,BoolEndCd: True,BoolNoPos: False,BoolPrgso: True,BoolShowM: True,BoolSlnha: True,BoolTSala: False,BoolTpFim: True,Descricao: Arena,HoraDoDia: 11:00,MoveObsto: False,ObstacTmp: 50,PontoDist: True,ResgtePos: 1,RobosPerm: 111111,SaveMrcds: 3,TempoMxmo: 4,VitmaPnts: True,VtmsMrtas: 2,VtmsVivas: 2,,Descricao: Arena"
+manual_arena = "0000r0000,0010r3000,0020c0000,1020c0090,1010r9180,1000ci270,2000r9270,3000c5180,3010r6180,3020c3000,4020c0090,4010r3180,4000c3270,5000c1180,5010r9000,5020rg000,5030cd090,4030rf090,3030r[090,2030rQ270,1030r9090,0030c4270,0040c0000,1040r6270,2040ra090,3040rf090,4040rr090,5040r9270,6040ch090,6030rb180,6020rb000,6010c1270,7010r4270,8010c2090,8000c1270,9000c3180,9010r}180,9020c0090,8020c0270,8030r3000,8040c1000,9040c4180,9050cf090,8050c1270,8060c3000,9060c1180,9070c1090,8070r0090,7070c2000,7060c3180,6060r3270,5060r5270,4060c2270,4070ro000,4080c1000,5080c2180,5090c5090,4090ra270,3090rh270,2090cd000,2080cd180,1080cc270,1090cc090,0090cg000,0080ra000,0070r6000,0060c5270,1060c5180,1070cf000,2070rn090,3070r4090,4070ro000,5070r0270,6070c0180,2010cm270,2020cm270,9030cm090,7090r?000,3080cm090,3060cm090,2060cm090,6000cm270,0,ResgtePos: 1,BoolSlnha: true,HoraDoDia: 10:00"
 
 [node name="ViewMain" type="Node2D" parent="."]
 z_index = 5

@@ -20,10 +20,18 @@ public class ArenaCoder : Node2D {
 		}
 	}
 
-	public string reverse(string s){
-		char[] arr = s.ToCharArray();
-		Array.Reverse(arr);
-		return new string(arr);
+	public static string reverse(string s){
+		if (s == null) return null;
+		char[] charArray = s.ToCharArray();
+		int len = s.Length - 1;
+
+		for (int i = 0; i < len; i++, len--){
+			charArray[i] ^= charArray[len];
+			charArray[len] ^= charArray[i];
+			charArray[i] ^= charArray[len];
+		}
+
+		return new string(charArray);
 	}
 
 	public string[] filter(string native_code){
@@ -426,6 +434,9 @@ public class ArenaCoder : Node2D {
 
 	private PackedScene TileBase_scene = (PackedScene)ResourceLoader.Load("res://dataScenes/TileBase.tscn");
 	private PackedScene UnderLine_scene = (PackedScene)ResourceLoader.Load("res://dataScenes/UnderLine_tile.tscn");
+	private PackedScene Notification_scene = (PackedScene)ResourceLoader.Load("res://dataScenes/Notification.tscn");
+
+	//Base textures
 	private Texture BaseWhite_texture = (Texture)ResourceLoader.Load($"res://dataFile/2D assets/Complementares/Fundo_branco.png");
 	private Texture BaseWhiteNoised_texture = (Texture)ResourceLoader.Load($"res://dataFile/2D assets/Complementares/Fundo_branco_noised.png");
 
@@ -437,7 +448,7 @@ public class ArenaCoder : Node2D {
 	private Texture BaseRescueTopNoised_texture = (Texture)ResourceLoader.Load($"res://dataFile/2D assets/Complementares/Fundo_resgate_top_noised.png");
 
 	//Geral
-	bool NoisedTiles = true;
+	bool NoisedTiles = false;
 	Tile RescueDat = new Tile(0, 0, 0, "null", 0);
 	Tile EndingDat = new Tile(0, 0, 0, "null", 0);
 	Vector2 OffsetRescue =  new Vector2(10, 256);
@@ -510,12 +521,12 @@ public class ArenaCoder : Node2D {
 		GetParent().GetNode("ViewMain").GetNode("Menu").GetNode<Label>("Infos").Text = output;
 	}
 
-	public Vector2 getTilePos(byte tile_x, byte tile_y){
-		tile_x = (byte)((tile_x > 9) ? 9 : tile_x);
-		tile_y = (byte)((tile_y > 9) ? 9 : tile_y);
-		tile_x = (byte)((tile_x < 0) ? 0 : tile_x);
-		tile_y = (byte)((tile_y < 0) ? 0 : tile_y);
-		return new Vector2( (short)(448 + (tile_x * 256)), (short)(632 - (tile_y * 256)));
+	public Vector2 getTilePos(Vector2 TileVector){
+		TileVector.x = (byte)((TileVector.x > 9) ? 9 : TileVector.x);
+		TileVector.y = (byte)((TileVector.y > 9) ? 9 : TileVector.y);
+		TileVector.x = (byte)((TileVector.x < 0) ? 0 : TileVector.x);
+		TileVector.y = (byte)((TileVector.y < 0) ? 0 : TileVector.y);
+		return new Vector2( (short)(448 + (TileVector.x * 256)), (short)(632 - (TileVector.y * 256)));
 	}
 
 	public void reserve(string tileconfig){
@@ -576,6 +587,8 @@ public class ArenaCoder : Node2D {
 	}
 
 	public void updateInfoMenu(){
+		GetParent().GetNode<Node2D>("ViewMain").Call("updateTileInfo");
+
 		GetParent().GetNode<Node2D>("ViewMain").GetNode<Control>("Menu").GetNode<Label>("SunInfoLabel").Text = $"{HoraDoDia[0]}:{HoraDoDia[1]}";
 		if((short.Parse(HoraDoDia[0]) > 18) || (short.Parse(HoraDoDia[0]) <= 6)){
 			GetParent().GetNode<Node2D>("ViewMain").GetNode<Control>("Menu").GetNode<TextureRect>("TimeImage").Texture = (Texture)ResourceLoader.Load($"res://dataFile/2D assets/Outros/moon_phase_96px.png");
@@ -622,7 +635,7 @@ public class ArenaCoder : Node2D {
 
 	public void addTile(Tile CurrentTile, Texture CurrentTexture, byte TypeTileBase, Vector2 OffsetTileBase){
 		if(CurrentTile.type == "null"){return;}
-		Vector2 TilePosition = getTilePos((byte)CurrentTile.x, (byte)CurrentTile.y);
+		Vector2 TilePosition = getTilePos(new Vector2(CurrentTile.x, CurrentTile.y));
 		bool ComparePosition(string CurrentName){
 			byte pos_x = byte.Parse(reverse(CurrentName.Substring(0, 2)));
 			byte pos_y = byte.Parse(reverse(CurrentName.Substring(2, 2)));
@@ -658,11 +671,13 @@ public class ArenaCoder : Node2D {
 		CurrentChild.Set("Info",  (string)encode(CurrentTile));
 		//Case underline tile:
 		if(UnderLineTiles.Contains($"{CurrentTile.type}{CurrentTile.id}")){
-			CurrentChild.GetNode<Sprite>("Filter").Texture = (Texture)ResourceLoader.Load($"res://dataFile/2D assets/Complementares/Filtro_Azul_Linha.png");
-			GD.Print($"Underline: {CurrentTile.type}{CurrentTile.id}");
+			GD.Print($"Underline tile: {CurrentTile.type}{CurrentTile.id}");
+			Sprite Filter_child = new Sprite();
+			Filter_child.Texture = (Texture)ResourceLoader.Load($"res://dataFile/2D assets/Complementares/Filtro_Azul_Linha.png");
+			CurrentChild.CallDeferred("add_child", Filter_child);
 			Area2D CurrentUnderLine = (Area2D)UnderLine_scene.Instance();
 			CurrentUnderLine.GetNode<Sprite>("UnderLineSprite").Texture = (Texture)ResourceLoader.Load($"res://dataFile/2D assets/Ladrilhos/Retas/{CurrentTile.id}_.png");
-			CallDeferred("add_child", CurrentUnderLine);
+			CurrentChild.CallDeferred("add_child", CurrentUnderLine);
 		}
 		CallDeferred("add_child", CurrentChild);
 	}
@@ -733,270 +748,282 @@ public class ArenaCoder : Node2D {
 		return Output+additional;
 	}
 
-	public bool regenerateArena(string arena_code){
-		resetArena();
-
-		string[] final_code = filter(arena_code);
-		Tile CurrentTile;
-		foreach (string code in final_code){
-			if(code.Length > 9){
-				if((code.Substring(0, 10) != "Descricao:")){
-					code.Replace(" ", "");
+	public void regenerateArena(string arena_code){
+		System.Threading.Tasks.Task CurrentArenaThread = System.Threading.Tasks.Task.Factory.StartNew(() => {
+			void PopNotification(bool result){
+				Label Notification_instance = (Label)Notification_scene.Instance();
+				if(result){
+					Notification_instance.Text = "Arena importada com sucesso";
+					Notification_instance.Set("custom_colors/font_color", new Color(0, 0.8f, 0));
 				}else{
-					Descricao = code.Substring(11);
-					continue;
+					Notification_instance.Text = "Não foi possível importar a arena";
+					Notification_instance.Set("custom_colors/font_color", new Color(0.8f, 0, 0));
 				}
-			}else{code.Replace(" ", "");}
-			if(code.Length == 9){//Normal tile
-				CurrentTile = decode(code);
-				if(filterFlags(CurrentTile)){continue;}
-				addTile(CurrentTile, loadTextureTile(CurrentTile.type, CurrentTile.id), 1, new Vector2(0, 0));
+				GetParent().GetNode<Node2D>("ViewMain").GetNode<Control>("Menu").CallDeferred("add_child", Notification_instance);
+			}
 
-			}else if(code.Length == 1){//Probaly config code
-				try{
-					RescueTyp = byte.Parse(code);
-				}catch{
-					GD.Print($"Cant Parse {code} to byte!");
-					return false;
-				}
+			resetArena();
+			string[] final_code = filter(arena_code);
+			Tile CurrentTile;
+			foreach (string code in final_code){
+				if(code.Length > 9){
+					if((code.Substring(0, 10) != "Descricao:")){
+						code.Replace(" ", "");
+					}else{
+						Descricao = code.Substring(11);
+						continue;
+					}
+				}else{code.Replace(" ", "");}
+				if(code.Length == 9){//Normal tile
+					CurrentTile = decode(code);
+					if(filterFlags(CurrentTile)){continue;}
+					addTile(CurrentTile, loadTextureTile(CurrentTile.type, CurrentTile.id), 1, new Vector2(0, 0));
 
-			}else if(code.Length > 9){//Probaly config code
-				try{
-					switch (code.Substring(0, 10)){
-						case "BoolEndCd:":
-							if(code.Substring(10) == "false"){
-								BoolEndCd = false;
+				}else if(code.Length == 1){//Probaly config code
+					try{
+						RescueTyp = byte.Parse(code);
+					}catch{
+						GD.Print($"Cant Parse {code} to byte!");
+					}
+
+				}else if(code.Length > 9){//Probaly config code
+					try{
+						switch (code.Substring(0, 10)){
+							case "BoolEndCd:":
+								if(code.Substring(10) == "false"){
+									BoolEndCd = false;
+									break;
+								}
+								BoolEndCd = true;
 								break;
-							}
-							BoolEndCd = true;
-							break;
-						case "BoolNoPos:":
-							if(code.Substring(10) == "false"){
-								BoolNoPos = false;
+							case "BoolNoPos:":
+								if(code.Substring(10) == "false"){
+									BoolNoPos = false;
+									break;
+								}
+								BoolNoPos = true;
 								break;
-							}
-							BoolNoPos = true;
-							break;
-						case "BoolPrgso:":
-							if(code.Substring(10) == "false"){
-								BoolPrgso = false;
+							case "BoolPrgso:":
+								if(code.Substring(10) == "false"){
+									BoolPrgso = false;
+									break;
+								}
+								BoolPrgso = true;
 								break;
-							}
-							BoolPrgso = true;
-							break;
-						case "BoolShowM:":
-							if(code.Substring(10) == "false"){
-								BoolShowM = false;
+							case "BoolShowM:":
+								if(code.Substring(10) == "false"){
+									BoolShowM = false;
+									break;
+								}
+								BoolShowM = true;
 								break;
-							}
-							BoolShowM = true;
-							break;
-						case "BoolSlnha:":
-							if(code.Substring(10) == "false"){
-								BoolSlnha = false;
+							case "BoolSlnha:":
+								if(code.Substring(10) == "false"){
+									BoolSlnha = false;
+									break;
+								}
+								BoolSlnha = true;
 								break;
-							}
-							BoolSlnha = true;
-							break;
-						case "BoolTSala:":
-							BoolTSala = code.Substring(10) == "2";
-							break;
-						case "BoolTpFim:":
-							if(code.Substring(10) == "false"){
-								BoolTpFim = false;
+							case "BoolTSala:":
+								BoolTSala = code.Substring(10) == "2";
 								break;
-							}
-							BoolTpFim = true;
-							break;
-						case "HoraDoDia:":
-							string hcode = code.Replace(" ", "");
-							string[] HorarioArray = hcode.Substring(10).Split(':');
-							if (hcode.Substring(10) == HorarioArray[0]){
-								HoraDoDia = new string[]{"12", "00"};
+							case "BoolTpFim:":
+								if(code.Substring(10) == "false"){
+									BoolTpFim = false;
+									break;
+								}
+								BoolTpFim = true;
 								break;
-							}
-							HorarioArray[0] = short.Parse(HorarioArray[0]).ToString("00");
-							HorarioArray[1] = short.Parse(HorarioArray[1]).ToString("00");
-							HoraDoDia = HorarioArray;
-							break;
-						case "Imagem001:":
-							reserve(code);
-							break;
-						case "Imagem021:":
-							reserve(code);
-							break;
-						case "Imagem022:":
-							reserve(code);
-							break;
-						case "Imagem023:":
-							reserve(code);
-							break;
-						case "Imagem024:":
-							reserve(code);
-							break;
-						case "Imagem031:":
-							reserve(code);
-							break;
-						case "Imagem032:":
-							reserve(code);
-							break;
-						case "Imagem101:":
-							reserve(code);
-							break;
-						case "Imagem102:":
-							reserve(code);
-							break;
-						case "Imagem103:":
-							reserve(code);
-							break;
-						case "Imagem104:":
-							reserve(code);
-							break;
-						case "Imagem105:":
-							reserve(code);
-							break;
-						case "Imagem106:":
-							reserve(code);
-							break;
-						case "Imagem107:":
-							reserve(code);
-							break;
-						case "Imagem108:":
-							reserve(code);
-							break;
-						case "Imagem109:":
-							reserve(code);
-							break;
-						case "Imagem110:":
-							reserve(code);
-							break;;
-						case "Imagem111:":
-							reserve(code);
-							break;
-						case "Imagem112:":
-							reserve(code);
-							break;
-						case "Imagem113:":
-							reserve(code);
-							break;
-						case "Imagem114:":
-							reserve(code);
-							break;
-						case "Imagem115:":
-							reserve(code);
-							break;
-						case "Imagem116:":
-							reserve(code);
-							break;
-						case "Imagem117:":
-							reserve(code);
-							break;
-						case "Imagem118:":
-							reserve(code);
-							break;
-		
-						case "MarcadorF:":
-							reserve(code);
-							break;;
-						case "MarcadorP:":
-							reserve(code);
-							break;
-						case "MoveObsto:":
-							MoveObsto = !(code.Substring(10) == "false");
-							break;
-						case "ObstacTmp:":
-							ObstacTmp = short.Parse(code.Substring(10));
-							break;
-						case "PontoDist:":
-							PontoDist = !(code.Substring(10) == "false");
-							break;
-						case "ResgtePos:":
-							ResgtePos = short.Parse(code.Substring(10));
-							break;
-						case "RobosPerm:":
-							if (code.Substring(10).Length == 6 && code.Substring(10) != "000000"){
-								RobosPerm = code.Substring(10);
+							case "HoraDoDia:":
+								string hcode = code.Replace(" ", "");
+								string[] HorarioArray = hcode.Substring(10).Split(':');
+								if (hcode.Substring(10) == HorarioArray[0]){
+									HoraDoDia = new string[]{"12", "00"};
+									break;
+								}
+								HorarioArray[0] = short.Parse(HorarioArray[0]).ToString("00");
+								HorarioArray[1] = short.Parse(HorarioArray[1]).ToString("00");
+								HoraDoDia = HorarioArray;
 								break;
-							}
-							RobosPerm = "111111";
-							break;
-						case "SaveMrcds:":
-							SaveMrcds = short.Parse(code.Substring(10));
-							break;
-						case "TempoMxmo:":
-						  switch (int.Parse(code.Substring(10))){
-							case 0:
-							  TempoMxmo = 0;
+							case "Imagem001:":
+								reserve(code);
+								break;
+							case "Imagem021:":
+								reserve(code);
+								break;
+							case "Imagem022:":
+								reserve(code);
+								break;
+							case "Imagem023:":
+								reserve(code);
+								break;
+							case "Imagem024:":
+								reserve(code);
+								break;
+							case "Imagem031:":
+								reserve(code);
+								break;
+							case "Imagem032:":
+								reserve(code);
+								break;
+							case "Imagem101:":
+								reserve(code);
+								break;
+							case "Imagem102:":
+								reserve(code);
+								break;
+							case "Imagem103:":
+								reserve(code);
+								break;
+							case "Imagem104:":
+								reserve(code);
+								break;
+							case "Imagem105:":
+								reserve(code);
+								break;
+							case "Imagem106:":
+								reserve(code);
+								break;
+							case "Imagem107:":
+								reserve(code);
+								break;
+							case "Imagem108:":
+								reserve(code);
+								break;
+							case "Imagem109:":
+								reserve(code);
+								break;
+							case "Imagem110:":
+								reserve(code);
+								break;;
+							case "Imagem111:":
+								reserve(code);
+								break;
+							case "Imagem112:":
+								reserve(code);
+								break;
+							case "Imagem113:":
+								reserve(code);
+								break;
+							case "Imagem114:":
+								reserve(code);
+								break;
+							case "Imagem115:":
+								reserve(code);
+								break;
+							case "Imagem116:":
+								reserve(code);
+								break;
+							case "Imagem117:":
+								reserve(code);
+								break;
+							case "Imagem118:":
+								reserve(code);
+								break;
+			
+							case "MarcadorF:":
+								reserve(code);
+								break;;
+							case "MarcadorP:":
+								reserve(code);
+								break;
+							case "MoveObsto:":
+								MoveObsto = !(code.Substring(10) == "false");
+								break;
+							case "ObstacTmp:":
+								ObstacTmp = short.Parse(code.Substring(10));
+								break;
+							case "PontoDist:":
+								PontoDist = !(code.Substring(10) == "false");
+								break;
+							case "ResgtePos:":
+								ResgtePos = short.Parse(code.Substring(10));
+								break;
+							case "RobosPerm:":
+								if (code.Substring(10).Length == 6 && code.Substring(10) != "000000"){
+									RobosPerm = code.Substring(10);
+									break;
+								}
+								RobosPerm = "111111";
+								break;
+							case "SaveMrcds:":
+								SaveMrcds = short.Parse(code.Substring(10));
+								break;
+							case "TempoMxmo:":
+							  switch (int.Parse(code.Substring(10))){
+								case 0:
+								  TempoMxmo = 0;
+								  break;
+								case 1:
+								  TempoMxmo = 1;
+								  break;
+								case 2:
+								  TempoMxmo = 2;
+								  break;
+								case 4:
+								  TempoMxmo = 4;
+								  break;
+								case 5:
+								  TempoMxmo = 5;
+								  break;
+								case 6:
+								  TempoMxmo = 6;
+								  break;
+								default:
+								  TempoMxmo = 3;
+								  break;
+							  }
 							  break;
-							case 1:
-							  TempoMxmo = 1;
+							case "VelaAcesa:":
+								reserve(code);
+								break;
+							case "VelaApgda:":
+								reserve(code);
+								break;
+							case "VitimOrta:":
+								reserve(code);
+								break;
+							case "VitimViva:":
+								reserve(code);
+								break;
+							case "VitmaPnts:":
+								VitmaPnts = !(code.Substring(10) == "false");
+								break;
+							case "VtmsMrtas:":
+								VtmsMrtas = short.Parse(code.Substring(10));
+								if (VtmsMrtas > 10 || VtmsMrtas < 0){
+									VtmsMrtas = 0;
+								}
 							  break;
-							case 2:
-							  TempoMxmo = 2;
+							case "VtmsVivas:":
+								VtmsVivas = short.Parse(code.Substring(10));
+								if (VtmsVivas > 10 || VtmsVivas < 0){
+									VtmsVivas = 0;
+								}
 							  break;
-							case 4:
-							  TempoMxmo = 4;
-							  break;
-							case 5:
-							  TempoMxmo = 5;
-							  break;
-							case 6:
-							  TempoMxmo = 6;
-							  break;
+							case "prfsrCubo:":
+								reserve(code);
+								break;
 							default:
-							  TempoMxmo = 3;
-							  break;
-						  }
-						  break;
-						case "VelaAcesa:":
-							reserve(code);
-							break;
-						case "VelaApgda:":
-							reserve(code);
-							break;
-						case "VitimOrta:":
-							reserve(code);
-							break;
-						case "VitimViva:":
-							reserve(code);
-							break;
-						case "VitmaPnts:":
-							VitmaPnts = !(code.Substring(10) == "false");
-							break;
-						case "VtmsMrtas:":
-							VtmsMrtas = short.Parse(code.Substring(10));
-							if (VtmsMrtas > 10 || VtmsMrtas < 0){
-								VtmsMrtas = 0;
-							}
-						  break;
-						case "VtmsVivas:":
-							VtmsVivas = short.Parse(code.Substring(10));
-							if (VtmsVivas > 10 || VtmsVivas < 0){
-								VtmsVivas = 0;
-							}
-						  break;
-						case "prfsrCubo:":
-							reserve(code);
-							break;
-						default:
-							GD.Print($"No values for {code}");
-							return false;
-							break;
-				  	}
-				}catch (Exception ex){
-					GD.Print($"Error on load switch code: {code}, with exception: {ex.Message}");
-					return false;
+								GD.Print($"No values for {code}");
+								//return false;
+								break;
+					  	}
+					}catch (Exception ex){
+						GD.Print($"Error on load switch code: {code}, with exception: {ex.Message}");
+						PopNotification(false);
+					}
 				}
 			}
-		}
-		loadFlags();
-		updateInfoMenu();
-		return true;		
+			loadFlags();
+			updateInfoMenu();
+			PopNotification(true);
+		});	
 	}
 
 	public override void _Ready(){
 		if(manual_arena != ""){
-			regenerateArena(manual_arena);
+			regenerateArena(manual_arena); 
 		}
 	}
 

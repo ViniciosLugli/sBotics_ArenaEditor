@@ -2,40 +2,41 @@ using Godot;
 using System;
 
 public class UnderLine : Area2D{
-	private bool IsOverlaping = false;
+	private byte IsOverlaping = 3;
 	private float ModulateObjective = 1f;
 	public override void _Process(float delta){
-		if(IsOverlaping){
+		if(IsOverlaping == 1){
 			ModulateObjective = 0.4f;
-			GetParent().GetNode<Sprite>("TileBase").Visible = false;
+			GetParent().GetChild<Sprite>(0).Visible = false;
 			GetNode<Sprite>("UnderLineSprite").Visible = true;
 			
-			if((GetParent().GetNode<Sprite>("Filter").Modulate.a - ModulateObjective) < 0.01f){
-				GetParent().GetNode<Sprite>("Filter").Modulate =
+			if((GetParent().GetChild<Sprite>(1).Modulate.a - ModulateObjective) < 0.08f){
+				GetParent().GetChild<Sprite>(1).Modulate =
 				new Color(1, 1, 1, ModulateObjective);
+				IsOverlaping = 3;
 			}else{
-				GetParent().GetNode<Sprite>("Filter").Modulate =
-				new Color(1, 1, 1, (float)(GetParent().GetNode<Sprite>("Filter").Modulate.a-((GetParent().GetNode<Sprite>("Filter").Modulate.a - ModulateObjective)*3f*delta)));
+				GetParent().GetChild<Sprite>(1).Modulate =
+				new Color(1, 1, 1, (float)(GetParent().GetChild<Sprite>(1).Modulate.a-((GetParent().GetChild<Sprite>(1).Modulate.a - ModulateObjective)*3f*delta)));
 			}
-		}else{
+		}else if(IsOverlaping == 0){
 			ModulateObjective = 1f;
 			GetNode<Sprite>("UnderLineSprite").Visible = false;
-			GetParent().GetNode<Sprite>("TileBase").Visible = true;
-			if((ModulateObjective - GetParent().GetNode<Sprite>("Filter").Modulate.a) < 0.01f){
-				GetParent().GetNode<Sprite>("Filter").Modulate =
+			GetParent().GetChild<Sprite>(0).Visible = true;
+			if((ModulateObjective - GetParent().GetChild<Sprite>(1).Modulate.a) < 0.08f){
+				GetParent().GetChild<Sprite>(1).Modulate =
 				new Color(1, 1, 1, ModulateObjective);
+				IsOverlaping = 3;
 			}else{
-				GetParent().GetNode<Sprite>("Filter").Modulate =
-					new Color(1, 1, 1, (float)(GetParent().GetNode<Sprite>("Filter").Modulate.a+((ModulateObjective - GetParent().GetNode<Sprite>("Filter").Modulate.a)*1.8f*delta)));
+				GetParent().GetChild<Sprite>(1).Modulate =
+					new Color(1, 1, 1, (float)(GetParent().GetChild<Sprite>(1).Modulate.a+((ModulateObjective - GetParent().GetChild<Sprite>(1).Modulate.a)*1.8f*delta)));
 			}
 		}
 	}
 	private void _on_Area_mouse_entered(){
-		IsOverlaping = true;
+		IsOverlaping = 1;
 	}
 
 	private void _on_Area_mouse_exited(){
-		IsOverlaping = false;
+		IsOverlaping = 0;
 	}
-
 }

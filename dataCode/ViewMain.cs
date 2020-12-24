@@ -11,53 +11,49 @@ public class ViewMain : Node2D{
 
 	public override void _Ready(){
 		GetNode<Sprite>("CurrestTileMark").Visible = true;
-		this.Position = (Vector2)GetNode<Node2D>("/root/Main/Arena/Editor").Call("getTilePos", (byte)CurrentPosition.x, (byte)CurrentPosition.y);
+		this.Position = (Vector2)GetNode<Node2D>("/root/Main/Arena/Editor").Call("getTilePos", (Vector2)CurrentPosition);
 		updateTileInfo();
 	}
 
 	public void updateTileInfo(){
 		Vector2 ToGetTileInfo = CurrentPosition;
-		bool ComparePosition(string CurrentName){
-			byte pos_x = byte.Parse((string)GetNode<Node2D>("/root/Main/Arena/Editor").Call("reverse", (string)CurrentName.Substring(0, 2)));
-			byte pos_y = byte.Parse((string)GetNode<Node2D>("/root/Main/Arena/Editor").Call("reverse", (string)CurrentName.Substring(2, 2)));
-			return ((pos_x == ToGetTileInfo.x) && (pos_y == ToGetTileInfo.y));
-		}
-		foreach(Sprite child in GetNode<Node2D>("/root/Main/Arena/Editor").GetChildren()){
-			if(ComparePosition(child.Name)){
-				string TileType = ((string)child.Get("Info")).Substring(4, 1).ToLower();
-				int TileId = (int)GetNode<Node2D>("/root/Main/Arena/Editor").Call("getIndex", (string)(((string)child.Get("Info")).Substring(5, 1)));
-				string TileBaseComparer = $"{TileType}{TileId}";
-
-				//Set name
-				if(TileType == "c"){
-					GetNode<Control>("Menu").GetNode<Label>("TileInfoLabel").Text =
-						(string)GetNode<Node2D>("/root/Main/Arena/Editor").Call("getCurvedName", (int)TileId);
-				}else{
-					GetNode<Control>("Menu").GetNode<Label>("TileInfoLabel").Text =
-						(string)GetNode<Node2D>("/root/Main/Arena/Editor").Call("getStraightName", (int)TileId);
-				}
-
-				//Set color
-				if((TopTiles.Contains(TileBaseComparer)) && (ConjTiles.Contains(TileBaseComparer))){//METADINHA
-					GetNode<Control>("Menu").GetNode<Label>("TileInfoLabel").Set("custom_colors/font_color", new Color((0.450980f + 1f) / 2f, (0.388235f + 0.247059f) / 2f, (1f + 0.286275f) / 2f));
-				
-				}else if(TopTiles.Contains(TileBaseComparer)){//ELEVADO
-					GetNode<Control>("Menu").GetNode<Label>("TileInfoLabel").Set("custom_colors/font_color", new Color(0.450980f, 0.388235f, 1f));
-				
-				}else if(ConjTiles.Contains(TileBaseComparer)){//CONJUNTO
-					GetNode<Control>("Menu").GetNode<Label>("TileInfoLabel").Set("custom_colors/font_color", new Color(1f, 0.247059f, 0.286275f));
-				
-				}else if(TileBaseComparer == "r74"){//GANGORRA
-					GetNode<Control>("Menu").GetNode<Label>("TileInfoLabel").Set("custom_colors/font_color", new Color(0.490196f, 1f, 0.509804f));
-				
-				}else{//NENHUM
-					GetNode<Control>("Menu").GetNode<Label>("TileInfoLabel").Set("custom_colors/font_color", new Color(1f, 1f, 1f));
-				}
-				return;
+		Sprite child = (Sprite)GetNode<Node2D>("/root/Main/Arena/Editor").GetNodeOrNull<Sprite>($"{ToGetTileInfo.x}0{ToGetTileInfo.y}0");
+		if(child != null){
+			string TileType = ((string)child.Get("Info")).Substring(4, 1).ToLower();
+			int TileId = (int)GetNode<Node2D>("/root/Main/Arena/Editor").Call("getIndex", (string)(((string)child.Get("Info")).Substring(5, 1)));
+			string TileBaseComparer = $"{TileType}{TileId}";
+			//Set name
+			if(TileType == "c"){
+				GetNode<Control>("Menu").GetNode<Label>("TileInfoLabel").Text =
+					(string)GetNode<Node2D>("/root/Main/Arena/Editor").Call("getCurvedName", (int)TileId);
+			}else if(TileType == "r"){
+				GetNode<Control>("Menu").GetNode<Label>("TileInfoLabel").Text =
+					(string)GetNode<Node2D>("/root/Main/Arena/Editor").Call("getStraightName", (int)TileId);
+			}else{
+				GetNode<Control>("Menu").GetNode<Label>("TileInfoLabel").Text = "-";
 			}
+
+			//Set color
+			if((TopTiles.Contains(TileBaseComparer)) && (ConjTiles.Contains(TileBaseComparer))){//METADINHA
+				GetNode<Control>("Menu").GetNode<Label>("TileInfoLabel").Set("custom_colors/font_color", new Color((0.450980f + 1f) / 2f, (0.388235f + 0.247059f) / 2f, (1f + 0.286275f) / 2f));
+			
+			}else if(TopTiles.Contains(TileBaseComparer)){//ELEVADO
+				GetNode<Control>("Menu").GetNode<Label>("TileInfoLabel").Set("custom_colors/font_color", new Color(0.450980f, 0.388235f, 1f));
+			
+			}else if(ConjTiles.Contains(TileBaseComparer)){//CONJUNTO
+				GetNode<Control>("Menu").GetNode<Label>("TileInfoLabel").Set("custom_colors/font_color", new Color(1f, 0.247059f, 0.286275f));
+			
+			}else if(TileBaseComparer == "r74"){//GANGORRA
+				GetNode<Control>("Menu").GetNode<Label>("TileInfoLabel").Set("custom_colors/font_color", new Color(0.490196f, 1f, 0.509804f));
+			
+			}else{//NENHUM
+				GetNode<Control>("Menu").GetNode<Label>("TileInfoLabel").Set("custom_colors/font_color", new Color(1f, 1f, 1f));
+			}
+		}else{
+			GetNode<Control>("Menu").GetNode<Label>("TileInfoLabel").Set("custom_colors/font_color", new Color(1f, 1f, 1f));
+			GetNode<Control>("Menu").GetNode<Label>("TileInfoLabel").Text = "-";
 		}
-		GetNode<Control>("Menu").GetNode<Label>("TileInfoLabel").Set("custom_colors/font_color", new Color(1f, 1f, 1f));
-		GetNode<Control>("Menu").GetNode<Label>("TileInfoLabel").Text = "-";
+		
 	}
 
 	public void GoToPos(Vector2 FinalPos){
@@ -69,21 +65,32 @@ public class ViewMain : Node2D{
 	}
 
 	public override void _UnhandledInput(InputEvent @event){
-		if (@event is InputEventKey eventKey){
-			if(!eventKey.IsPressed()){return;}
-			if (eventKey.IsActionPressed("ui_right") && (CurrentPosition.x < 9)){
-				CurrentPosition.x += 1;
+		//try{
+			if (@event is InputEventKey eventKey){
+				if(!eventKey.IsPressed()){return;}
+				bool mod = false;
+				if (eventKey.IsActionPressed("ui_right") && (CurrentPosition.x < 9)){
+					CurrentPosition.x += 1;
+					mod = true;
+				}
+				if (eventKey.IsActionPressed("ui_left") && (CurrentPosition.x > 0)){
+					CurrentPosition.x -= 1;
+					mod = true;
+				}
+				if (eventKey.IsActionPressed("ui_down") && (CurrentPosition.y > 0)){
+					CurrentPosition.y -= 1;
+					mod = true;
+				}
+				if (eventKey.IsActionPressed("ui_up") && (CurrentPosition.y < 9)){
+					CurrentPosition.y += 1;
+					mod = true;
+				}
+				if(mod){
+					GoToPos((Vector2)GetNode<Node2D>("/root/Main/Arena/Editor").Call("getTilePos", (Vector2)CurrentPosition));
+				}
 			}
-			if (eventKey.IsActionPressed("ui_left") && (CurrentPosition.x > 0)){
-				CurrentPosition.x -= 1;
-			}
-			if (eventKey.IsActionPressed("ui_down") && (CurrentPosition.y > 0)){
-				CurrentPosition.y -= 1;
-			}
-			if (eventKey.IsActionPressed("ui_up") && (CurrentPosition.y < 9)){
-				CurrentPosition.y += 1;
-			}
-			GoToPos((Vector2)GetNode<Node2D>("/root/Main/Arena/Editor").Call("getTilePos", (byte)CurrentPosition.x, (byte)CurrentPosition.y));
-		}
+		// }catch{
+		// 	GD.Print("Exept in keyboard input... ignoring");
+		// }
 	}
 }

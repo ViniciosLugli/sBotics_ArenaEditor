@@ -20,23 +20,12 @@ public class Menu : Control{
 
 	private void _on_ImportArenaButton_pressed(){
 		if((ulong)OS.GetSystemTimeMsecs() > CooldownSet){
-			bool CheckImport = false;
 			try{
-				CheckImport = (bool)GetNode<Node2D>("/root/Main/Arena/Editor").Call("regenerateArena", OS.Clipboard);
+				GetNode<Node2D>("/root/Main/Arena/Editor").Call("regenerateArena", OS.Clipboard);
 			}catch{
 				GD.Print("Problem to import from clipboard");
-				CheckImport = false;
 				return;
 			}
-			Label Notification_instance = (Label)Notification_scene.Instance();
-			if(CheckImport){
-				Notification_instance.Text = "Arena importada com sucesso";
-				Notification_instance.Set("custom_colors/font_color", new Color(0, 0.8f, 0));
-			}else{
-				Notification_instance.Text = "Não foi possível importar a arena";
-				Notification_instance.Set("custom_colors/font_color", new Color(0.8f, 0, 0));
-			}
-			CallDeferred("add_child", Notification_instance);
 			CooldownSet = (ulong)OS.GetSystemTimeMsecs() + 500;
 		}
 	}
