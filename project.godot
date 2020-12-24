@@ -17,7 +17,15 @@ _global_script_class_icons={
 
 config/name="sBotics_ArenaEditor"
 run/main_scene="res://Main.tscn"
+run/low_processor_mode=true
+run/low_processor_mode_sleep_usec=8948
 config/icon="res://icon.png"
+
+[debug]
+
+settings/crash_handler/message="Houve um problema no seu editor de arenas!! Entre em contato com algum desenvolvedor pelo discord :)"
+settings/fps/force_fps=60
+settings/stdout/print_fps=true
 
 [display]
 

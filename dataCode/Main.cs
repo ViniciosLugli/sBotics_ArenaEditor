@@ -8,6 +8,6 @@ public class Main : Node{
 		OS.WindowMaximized = true;
 	}
 
-	public override void _Process(float delta){
-	}
+	// public override void _Process(float delta){
+	// }
 }
