@@ -2,7 +2,5 @@
 
 [ext_resource path="res://dataCode/TileScript.cs" type="Script" id=1]
 
-[node name="WhiteBase" type="Sprite"]
+[node name="TileBase" type="Sprite"]
 script = ExtResource( 1 )
-
-[node name="TileBase" type="Sprite" parent="."]

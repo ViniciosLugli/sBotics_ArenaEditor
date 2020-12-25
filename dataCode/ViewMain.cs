@@ -16,8 +16,7 @@ public class ViewMain : Node2D{
 	}
 
 	public void updateTileInfo(){
-		Vector2 ToGetTileInfo = CurrentPosition;
-		Sprite child = (Sprite)GetNode<Node2D>("/root/Main/Arena/Editor").GetNodeOrNull<Sprite>($"{ToGetTileInfo.x}0{ToGetTileInfo.y}0");
+		Sprite child = (Sprite)GetNode<Node2D>("/root/Main/Arena/Editor").GetNodeOrNull<Sprite>($"{CurrentPosition.x}0{CurrentPosition.y}0");
 		if(child != null){
 			string TileType = ((string)child.Get("Info")).Substring(4, 1).ToLower();
 			int TileId = (int)GetNode<Node2D>("/root/Main/Arena/Editor").Call("getIndex", (string)(((string)child.Get("Info")).Substring(5, 1)));
@@ -25,10 +24,10 @@ public class ViewMain : Node2D{
 			//Set name
 			if(TileType == "c"){
 				GetNode<Control>("Menu").GetNode<Label>("TileInfoLabel").Text =
-					(string)GetNode<Node2D>("/root/Main/Arena/Editor").Call("getCurvedName", (int)TileId);
+					$"{TileId}| {(string)GetNode<Node2D>("/root/Main/Arena/Editor").Call("getCurvedName", (int)TileId)}";
 			}else if(TileType == "r"){
 				GetNode<Control>("Menu").GetNode<Label>("TileInfoLabel").Text =
-					(string)GetNode<Node2D>("/root/Main/Arena/Editor").Call("getStraightName", (int)TileId);
+					$"{TileId}| {(string)GetNode<Node2D>("/root/Main/Arena/Editor").Call("getStraightName", (int)TileId)}";
 			}else{
 				GetNode<Control>("Menu").GetNode<Label>("TileInfoLabel").Text = "-";
 			}
@@ -64,33 +63,43 @@ public class ViewMain : Node2D{
 		updateTileInfo();
 	}
 
-	public override void _UnhandledInput(InputEvent @event){
-		//try{
-			if (@event is InputEventKey eventKey){
-				if(!eventKey.IsPressed()){return;}
-				bool mod = false;
-				if (eventKey.IsActionPressed("ui_right") && (CurrentPosition.x < 9)){
-					CurrentPosition.x += 1;
-					mod = true;
-				}
-				if (eventKey.IsActionPressed("ui_left") && (CurrentPosition.x > 0)){
-					CurrentPosition.x -= 1;
-					mod = true;
-				}
-				if (eventKey.IsActionPressed("ui_down") && (CurrentPosition.y > 0)){
-					CurrentPosition.y -= 1;
-					mod = true;
-				}
-				if (eventKey.IsActionPressed("ui_up") && (CurrentPosition.y < 9)){
-					CurrentPosition.y += 1;
-					mod = true;
-				}
-				if(mod){
-					GoToPos((Vector2)GetNode<Node2D>("/root/Main/Arena/Editor").Call("getTilePos", (Vector2)CurrentPosition));
-				}
-			}
-		// }catch{
-		// 	GD.Print("Exept in keyboard input... ignoring");
-		// }
+	public override void _PhysicsProcess(float delta){
+		bool mod = false;
+		if (Input.IsActionJustPressed("ui_right") && (CurrentPosition.x < 9)){
+			CurrentPosition.x += 1;
+			mod = true;
+		}
+		if (Input.IsActionJustPressed("ui_left") && (CurrentPosition.x > 0)){
+			CurrentPosition.x -= 1;
+			mod = true;
+		}
+		if (Input.IsActionJustPressed("ui_down") && (CurrentPosition.y > 0)){
+			CurrentPosition.y -= 1;
+			mod = true;
+		}
+		if (Input.IsActionJustPressed("ui_up") && (CurrentPosition.y < 9)){
+			CurrentPosition.y += 1;
+			mod = true;
+		}
+
+		if (Input.IsActionJustPressed("tile_left")){
+			GetNode<Node2D>("/root/Main/Arena/Editor").Call("tileEvent", CurrentPosition, 0);
+		}
+
+		if (Input.IsActionJustPressed("tile_right")){
+			GetNode<Node2D>("/root/Main/Arena/Editor").Call("tileEvent", CurrentPosition, 1);
+		}
+
+		if (Input.IsActionJustPressed("tile_type_change")){
+			GetNode<Node2D>("/root/Main/Arena/Editor").Call("tileEvent", CurrentPosition, 2);
+		}
+
+		if (Input.IsActionJustPressed("tile_delete")){
+			GetNode<Node2D>("/root/Main/Arena/Editor").Call("tileEvent", CurrentPosition, 3);
+		}
+
+		if(mod){
+			GoToPos((Vector2)GetNode<Node2D>("/root/Main/Arena/Editor").Call("getTilePos", (Vector2)CurrentPosition));
+		}
 	}
 }

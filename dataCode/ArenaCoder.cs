@@ -6,12 +6,12 @@ using System.Linq;
 public class ArenaCoder : Node2D {
 	//Classes:
 	public class Tile{
-		public short x{get;set;}
-		public short y{get;set;}
+		public byte x{get;set;}
+		public byte y{get;set;}
 		public short degrees{get;set;}
 		public string type{get;set;}
-		public short id{get;set;}
-		public Tile(short x, short y, short degrees, string type, short id){
+		public byte id{get;set;}
+		public Tile(byte x, byte y, short degrees, string type, byte id){
 			this.x = x;
 			this.y = y;
 			this.degrees = degrees;
@@ -83,24 +83,24 @@ public class ArenaCoder : Node2D {
 	}
 
 	public Tile decode(string code){
-		short pos_x = 0;
-		short pos_y = 0;
+		byte pos_x = 0;
+		byte pos_y = 0;
 		short direction = 0;
 		string compl0 = "r";
-		short compl1 = 0;
+		byte compl1 = 0;
 		try{
 			pos_x = byte.Parse(reverse(code.Substring(0, 2)));
 			pos_y = byte.Parse(reverse(code.Substring(2, 2)));
 			direction = short.Parse(code.Substring(6, 3));
 			compl0 = code.Substring(4, 1);
-			compl1 = (short)getIndex(code.Substring(5, 1));
+			compl1 = (byte)getIndex(code.Substring(5, 1));
 		}catch{
 			GD.Print($"The code: {code} is not a tile code! Returning emply tile");
 			return new Tile(0, 0, 0, "r", 71);
 		}
 
-		direction = (direction != 0 && direction != 90 && direction != 180 && direction != 270) ? (short)0 : direction;
-		GD.Print($"For code: '{code}' -> position: <{pos_x}, {pos_y}> | direction: {direction} | complement: <{compl0}, {compl1}>");
+		direction = (direction != 0 && direction != 90 && direction != 180 && direction != 270) ? (byte)0 : direction;
+		//GD.Print($"For code: '{code}' -> position: <{pos_x}, {pos_y}> | direction: {direction} | complement: <{compl0}, {compl1}>");
 		return new Tile(pos_x, pos_y, direction, compl0, compl1);
 	}
 
@@ -436,23 +436,20 @@ public class ArenaCoder : Node2D {
 
 	//Base textures
 	private Texture BaseWhite_texture = (Texture)ResourceLoader.Load($"res://dataFile/2D assets/Complementares/Fundo_branco.png");
-	private Texture BaseWhiteNoised_texture = (Texture)ResourceLoader.Load($"res://dataFile/2D assets/Complementares/Fundo_branco_noised.png");
-
-	//Rescue bot textures
-	private Texture BaseRescueBotNormal_texture = (Texture)ResourceLoader.Load($"res://dataFile/2D assets/Complementares/Fundo_resgate_bot_normal.png");
-	private Texture BaseRescueBotNoised_texture = (Texture)ResourceLoader.Load($"res://dataFile/2D assets/Complementares/Fundo_resgate_bot_noised.png");
-	//Rescue top textures
-	private Texture BaseRescueTopNormal_texture = (Texture)ResourceLoader.Load($"res://dataFile/2D assets/Complementares/Fundo_resgate_top_normal.png");
-	private Texture BaseRescueTopNoised_texture = (Texture)ResourceLoader.Load($"res://dataFile/2D assets/Complementares/Fundo_resgate_top_noised.png");
-
+	
 	//Geral
+	string lastType = "r";
 	bool NoisedTiles = false;
 	Tile RescueDat = new Tile(0, 0, 0, "null", 0);
 	Tile EndingDat = new Tile(0, 0, 0, "null", 0);
 	Vector2 OffsetRescue =  new Vector2(10, 256);
 	string[] Zindex2 = new string[]{"r73"};
 	string[] UnderLineTiles = new string[]{"r26", "r27", "r28", "r29", "r30", "r31", "r38", "r40", "r42", "r44", "r46", "r48", "r53", "r59", "r62", "r65", "r70"};
+	List<byte> straightList = new List<byte>();
+	List<byte> curvedList = new List<byte>();
 	//
+
+
 
 	//Arena settings:
 	bool BoolEndCd = false; //FINALIZAR ROTINA NO FIM DO CÓDIGO
@@ -584,37 +581,101 @@ public class ArenaCoder : Node2D {
 		return false;
 	}
 
-	public void updateInfoMenu(){
-		GetParent().GetNode<Node2D>("ViewMain").Call("updateTileInfo");
+	// public bool straightFlags(byte id){
+	// 	if(id == 73){
+	// 		if(RescueDat.type != "null" && (EndingDat.type == "null")){
+	// 			return false;
+	// 		}else{
+				
+	// 		}
+	// 	}
+	// }
 
-		GetParent().GetNode<Node2D>("ViewMain").GetNode<Control>("Menu").GetNode<Label>("SunInfoLabel").Text = $"{HoraDoDia[0]}:{HoraDoDia[1]}";
+	// public bool curvedFlags(){
+		
+	// }
+
+	public void tileEvent(Vector2 TileLocation, byte Event){
+		Sprite TileChild = (Sprite)GetNodeOrNull<Sprite>($"{TileLocation.x}0{TileLocation.y}0");
+		Tile CurrentTile = new Tile(0, 0, 0, "null", 0);
+		if(TileChild != null){
+			CurrentTile = decode((string)TileChild.Get("Info"));
+			if(Event == 3){
+				TileChild.CallDeferred("free");
+				return;
+			}else if(Event == 2){
+				CurrentTile.type = (CurrentTile.type == "r") ? "c" : "r";
+				lastType = CurrentTile.type;
+				CurrentTile.id = 0;
+			}else if(CurrentTile.type == "r"){
+				byte maxValue = (byte)(straightList.Count-1);
+				byte CurrentIndex = (byte)straightList.IndexOf((byte)CurrentTile.id);
+				if(Event == 0){
+					if(CurrentIndex <= 0){
+						CurrentTile.id = straightList[maxValue];
+					}else{
+						CurrentTile.id = straightList[--CurrentIndex];
+					}
+				}else if(Event == 1){
+					if(CurrentIndex >= maxValue){
+						CurrentTile.id = straightList[0];
+					}else{
+						CurrentTile.id = straightList[++CurrentIndex];
+					}
+				}
+			}else if(CurrentTile.type == "c"){
+				byte maxValue = (byte)(curvedList.Count-1);
+				byte CurrentIndex = (byte)curvedList.IndexOf((byte)CurrentTile.id);
+				if(Event == 0){
+					if(CurrentIndex <= 0){
+						CurrentTile.id = curvedList[maxValue];
+					}else{
+						CurrentTile.id = curvedList[--CurrentIndex];
+					}
+				}else if(Event == 1){
+					if(CurrentIndex >= maxValue){
+						CurrentTile.id = curvedList[0];
+					}else{
+						CurrentTile.id = curvedList[++CurrentIndex];
+					}
+				}
+			}else{
+				CurrentTile.type = lastType;
+				CurrentTile.id = 0;
+				CurrentTile.x = (byte)TileLocation.x;
+				CurrentTile.y = (byte)TileLocation.y;
+			}
+		}else{
+			CurrentTile.type = lastType;
+			CurrentTile.id = 0;
+			CurrentTile.x = (byte)TileLocation.x;
+			CurrentTile.y = (byte)TileLocation.y;
+		}
+		addTile(CurrentTile);
+	}
+
+	public void updateInfoMenu(){
+		GetNode<Node2D>("/root/Main/Arena/ViewMain").Call("updateTileInfo");
+
+		GetNode<Node2D>("/root/Main/Arena/ViewMain").GetNode<Control>("Menu").GetNode<Label>("SunInfoLabel").Text = $"{HoraDoDia[0]}:{HoraDoDia[1]}";
 		if((short.Parse(HoraDoDia[0]) > 18) || (short.Parse(HoraDoDia[0]) <= 6)){
-			GetParent().GetNode<Node2D>("ViewMain").GetNode<Control>("Menu").GetNode<TextureRect>("TimeImage").Texture = (Texture)ResourceLoader.Load($"res://dataFile/2D assets/Outros/moon_phase_96px.png");
-			GetParent().GetNode<Node2D>("ViewMain").GetNode<Control>("Menu").GetNode<Label>("SunInfoLabel").Set("custom_colors/font_color", new Color("#575580"));
+			GetNode<Node2D>("/root/Main/Arena/ViewMain").GetNode<Control>("Menu").GetNode<TextureRect>("TimeImage").Texture = (Texture)ResourceLoader.Load($"res://dataFile/2D assets/Outros/moon_phase_96px.png");
+			GetNode<Node2D>("/root/Main/Arena/ViewMain").GetNode<Control>("Menu").GetNode<Label>("SunInfoLabel").Set("custom_colors/font_color", new Color("#575580"));
 		
 		}else if((short.Parse(HoraDoDia[0]) > 12) && (short.Parse(HoraDoDia[0]) <= 18)){
-			GetParent().GetNode<Node2D>("ViewMain").GetNode<Control>("Menu").GetNode<TextureRect>("TimeImage").Texture = (Texture)ResourceLoader.Load($"res://dataFile/2D assets/Outros/sunset_96px.png");
-			GetParent().GetNode<Node2D>("ViewMain").GetNode<Control>("Menu").GetNode<Label>("SunInfoLabel").Set("custom_colors/font_color", new Color("#3686a0"));
+			GetNode<Node2D>("/root/Main/Arena/ViewMain").GetNode<Control>("Menu").GetNode<TextureRect>("TimeImage").Texture = (Texture)ResourceLoader.Load($"res://dataFile/2D assets/Outros/sunset_96px.png");
+			GetNode<Node2D>("/root/Main/Arena/ViewMain").GetNode<Control>("Menu").GetNode<Label>("SunInfoLabel").Set("custom_colors/font_color", new Color("#3686a0"));
 		
 		}else{
-			GetParent().GetNode<Node2D>("ViewMain").GetNode<Control>("Menu").GetNode<TextureRect>("TimeImage").Texture = (Texture)ResourceLoader.Load($"res://dataFile/2D assets/Outros/summer_96px.png");
-			GetParent().GetNode<Node2D>("ViewMain").GetNode<Control>("Menu").GetNode<Label>("SunInfoLabel").Set("custom_colors/font_color", new Color("#ffd700"));
+			GetNode<Node2D>("/root/Main/Arena/ViewMain").GetNode<Control>("Menu").GetNode<TextureRect>("TimeImage").Texture = (Texture)ResourceLoader.Load($"res://dataFile/2D assets/Outros/summer_96px.png");
+			GetNode<Node2D>("/root/Main/Arena/ViewMain").GetNode<Control>("Menu").GetNode<Label>("SunInfoLabel").Set("custom_colors/font_color", new Color("#ffd700"));
 		}
 	}
 
 	public void loadFlags(){
 		if(RescueDat.type != "null"){
-			if(RescueTyp != 0){
-				addTile(RescueDat, (Texture)ResourceLoader.Load($"res://dataFile/2D assets/Ladrilhos/Retas/{RescueDat.id}_{RescueTyp}.png"), 3, OffsetRescue);
-			}else{
-				addTile(RescueDat, (Texture)ResourceLoader.Load($"res://dataFile/2D assets/Ladrilhos/Retas/{RescueDat.id}_{RescueTyp}.png"), 2,  new Vector2(0, 0));
-			}
-			
+			addTile(RescueDat);
 		}
-	}
-
-	public Texture getBaseTexture(){
-		return (NoisedTiles) ? BaseWhiteNoised_texture : BaseWhite_texture;
 	}
 
 	public Texture loadTextureTile(string type, short id){
@@ -626,12 +687,12 @@ public class ArenaCoder : Node2D {
 			}
 		}catch{
 			GD.Print($"Error on import tile with type {type} and id: {id}");
-			return getBaseTexture();
+			return BaseWhite_texture;
 		}
-		return getBaseTexture();
+		return BaseWhite_texture;
 	}
 
-	public void addTile(Tile CurrentTile, Texture CurrentTexture, byte TypeTileBase, Vector2 OffsetTileBase){
+	public void addTile(Tile CurrentTile){
 		if(CurrentTile.type == "null"){return;}
 		Vector2 TilePosition = getTilePos(new Vector2(CurrentTile.x, CurrentTile.y));
 		bool ComparePosition(string CurrentName){
@@ -650,33 +711,25 @@ public class ArenaCoder : Node2D {
 			}
 		}
 		Sprite CurrentChild = (Sprite)TileBase_scene.Instance();
-		CurrentChild.GetNode<Sprite>("TileBase").Texture = CurrentTexture;
-		CurrentChild.GetNode<Sprite>("TileBase").Offset = OffsetTileBase;
-		if(TypeTileBase == 1){
-			CurrentChild.Texture = getBaseTexture();
-			CurrentChild.Offset = OffsetTileBase;
-		}else if(TypeTileBase  == 2){
-			CurrentChild.Texture = (NoisedTiles) ? BaseRescueBotNoised_texture : BaseRescueBotNormal_texture;
-			CurrentChild.Offset = OffsetTileBase;
-		}else if(TypeTileBase  == 3){
-			CurrentChild.Texture = (NoisedTiles) ? BaseRescueTopNoised_texture : BaseRescueTopNormal_texture;
-			CurrentChild.Offset = OffsetTileBase;
-		}
+		CurrentChild.Texture = loadTextureTile(CurrentTile.type, CurrentTile.id);
 		CurrentChild.ZIndex = getZindex(CurrentTile.type, CurrentTile.id);
 		CurrentChild.Position = TilePosition;
 		CurrentChild.RotationDegrees = CurrentTile.degrees;
 		CurrentChild.Name = $"{(string)encode(CurrentTile).Substring(0, 4)}";
 		CurrentChild.Set("Info",  (string)encode(CurrentTile));
+
 		//Case underline tile:
 		if(UnderLineTiles.Contains($"{CurrentTile.type}{CurrentTile.id}")){
 			GD.Print($"Underline tile: {CurrentTile.type}{CurrentTile.id}");
 			Sprite Filter_child = new Sprite();
 			Filter_child.Texture = (Texture)ResourceLoader.Load($"res://dataFile/2D assets/Complementares/Filtro_Azul_Linha.png");
+			Filter_child.ZIndex = 1;
 			CurrentChild.CallDeferred("add_child", Filter_child);
 			Area2D CurrentUnderLine = (Area2D)UnderLine_scene.Instance();
 			CurrentUnderLine.GetNode<Sprite>("UnderLineSprite").Texture = (Texture)ResourceLoader.Load($"res://dataFile/2D assets/Ladrilhos/Retas/{CurrentTile.id}_.png");
 			CurrentChild.CallDeferred("add_child", CurrentUnderLine);
 		}
+		GD.Print($"addTile -> position: <{CurrentTile.x}, {CurrentTile.y}> | direction: {CurrentTile.degrees} | complement: <{CurrentTile.type}, {CurrentTile.id}>");
 		CallDeferred("add_child", CurrentChild);
 	}
 
@@ -757,7 +810,7 @@ public class ArenaCoder : Node2D {
 					Notification_instance.Text = "Não foi possível importar a arena";
 					Notification_instance.Set("custom_colors/font_color", new Color(0.8f, 0, 0));
 				}
-				GetParent().GetNode<Node2D>("ViewMain").GetNode<Control>("Menu").CallDeferred("add_child", Notification_instance);
+				GetNode<Node2D>("/root/Main/Arena/ViewMain").GetNode<Control>("Menu").CallDeferred("add_child", Notification_instance);
 			}
 
 			resetArena();
@@ -775,7 +828,7 @@ public class ArenaCoder : Node2D {
 				if(code.Length == 9){//Normal tile
 					CurrentTile = decode(code);
 					if(filterFlags(CurrentTile)){continue;}
-					addTile(CurrentTile, loadTextureTile(CurrentTile.type, CurrentTile.id), 1, new Vector2(0, 0));
+					addTile(CurrentTile);
 
 				}else if(code.Length == 1){//Probaly config code
 					try{
@@ -1019,13 +1072,30 @@ public class ArenaCoder : Node2D {
 		});	
 	}
 
+	private void preLoad(){
+		foreach(int CurrentValue in straightTileDictionary().Keys){
+			if(CurrentValue <= 100){
+				straightList.Add((byte)CurrentValue);
+			}
+		}
+
+		foreach(int CurrentValue in curvedTileDictionary().Keys){
+			if(CurrentValue <= 100){
+				curvedList.Add((byte)CurrentValue);
+			}
+		}
+		straightList.Sort();
+		curvedList.Sort();
+	}
+
 	public override void _Ready(){
+		preLoad();
 		if(manual_arena != ""){
 			regenerateArena(manual_arena); 
 		}
 	}
 
 	public override void _Process(float delta){
-
+		
 	}
 }

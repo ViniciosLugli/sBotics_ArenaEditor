@@ -7,28 +7,26 @@ public class UnderLine : Area2D{
 	public override void _Process(float delta){
 		if(IsOverlaping == 1){
 			ModulateObjective = 0.4f;
-			GetParent().GetChild<Sprite>(0).Visible = false;
 			GetNode<Sprite>("UnderLineSprite").Visible = true;
 			
-			if((GetParent().GetChild<Sprite>(1).Modulate.a - ModulateObjective) < 0.08f){
-				GetParent().GetChild<Sprite>(1).Modulate =
+			if((GetParent().GetChild<Sprite>(0).Modulate.a - ModulateObjective) < 0.08f){
+				GetParent().GetChild<Sprite>(0).Modulate =
 				new Color(1, 1, 1, ModulateObjective);
 				IsOverlaping = 3;
 			}else{
-				GetParent().GetChild<Sprite>(1).Modulate =
-				new Color(1, 1, 1, (float)(GetParent().GetChild<Sprite>(1).Modulate.a-((GetParent().GetChild<Sprite>(1).Modulate.a - ModulateObjective)*3f*delta)));
+				GetParent().GetChild<Sprite>(0).Modulate =
+				new Color(1, 1, 1, (float)(GetParent().GetChild<Sprite>(0).Modulate.a-((GetParent().GetChild<Sprite>(0).Modulate.a - ModulateObjective)*3f*delta)));
 			}
 		}else if(IsOverlaping == 0){
 			ModulateObjective = 1f;
 			GetNode<Sprite>("UnderLineSprite").Visible = false;
-			GetParent().GetChild<Sprite>(0).Visible = true;
-			if((ModulateObjective - GetParent().GetChild<Sprite>(1).Modulate.a) < 0.08f){
-				GetParent().GetChild<Sprite>(1).Modulate =
+			if((ModulateObjective - GetParent().GetChild<Sprite>(0).Modulate.a) < 0.08f){
+				GetParent().GetChild<Sprite>(0).Modulate =
 				new Color(1, 1, 1, ModulateObjective);
 				IsOverlaping = 3;
 			}else{
-				GetParent().GetChild<Sprite>(1).Modulate =
-					new Color(1, 1, 1, (float)(GetParent().GetChild<Sprite>(1).Modulate.a+((ModulateObjective - GetParent().GetChild<Sprite>(1).Modulate.a)*1.8f*delta)));
+				GetParent().GetChild<Sprite>(0).Modulate =
+					new Color(1, 1, 1, (float)(GetParent().GetChild<Sprite>(0).Modulate.a+((ModulateObjective - GetParent().GetChild<Sprite>(0).Modulate.a)*1.8f*delta)));
 			}
 		}
 	}
