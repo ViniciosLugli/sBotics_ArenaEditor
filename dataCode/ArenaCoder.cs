@@ -443,7 +443,6 @@ public class ArenaCoder : Node2D {
 	Tile RescueDat = new Tile(0, 0, 0, "null", 0);
 	Tile EndingDat = new Tile(0, 0, 0, "null", 0);
 	Vector2 OffsetRescue =  new Vector2(10, 256);
-	string[] Zindex2 = new string[]{"r73"};
 	string[] UnderLineTiles = new string[]{"r26", "r27", "r28", "r29", "r30", "r31", "r38", "r40", "r42", "r44", "r46", "r48", "r53", "r59", "r62", "r65", "r70"};
 	List<byte> straightList = new List<byte>();
 	List<byte> curvedList = new List<byte>();
@@ -564,15 +563,6 @@ public class ArenaCoder : Node2D {
 		}
 	}
 
-	public byte getZindex(string type, short id){
-		//string[] Zindex3 = new string[]{};
-		if(Zindex2.Contains($"{type}{id}")){
-			return 2;
-		}else{
-			return 1;
-		}
-	}
-
 	public bool filterFlags(Tile ctile){
 		if((ctile.type == "r") && (ctile.id == 73) && (RescueDat.type == "null") && (EndingDat.type == "null")){
 			RescueDat = ctile;
@@ -612,6 +602,7 @@ public class ArenaCoder : Node2D {
 				byte CurrentIndex = (byte)straightList.IndexOf((byte)CurrentTile.id);
 				if(Event == 0){
 					if(CurrentIndex <= 0){
+
 						CurrentTile.id = straightList[maxValue];
 					}else{
 						CurrentTile.id = straightList[--CurrentIndex];
@@ -651,7 +642,7 @@ public class ArenaCoder : Node2D {
 			CurrentTile.x = (byte)TileLocation.x;
 			CurrentTile.y = (byte)TileLocation.y;
 		}
-		addTile(CurrentTile);
+		addTile(CurrentTile, true);
 	}
 
 	public void updateInfoMenu(){
@@ -674,25 +665,30 @@ public class ArenaCoder : Node2D {
 
 	public void loadFlags(){
 		if(RescueDat.type != "null"){
-			addTile(RescueDat);
+			addTile(RescueDat, false);
 		}
 	}
 
 	public Texture loadTextureTile(string type, short id){
+		Texture CurrentTexture = BaseWhite_texture;
 		try{
 			if(type.ToLower() == "r"){
-				return (Texture)ResourceLoader.Load($"res://dataFile/2D assets/Ladrilhos/Retas/{id}.png");
+				if($"{type}{id}" == "r73"){
+					CurrentTexture = (Texture)ResourceLoader.Load($"res://dataFile/2D assets/Ladrilhos/Retas/{id}_{RescueTyp}.png");
+				}else{
+					CurrentTexture = (Texture)ResourceLoader.Load($"res://dataFile/2D assets/Ladrilhos/Retas/{id}.png");
+				}
 			}else if(type.ToLower() == "c"){
-				return (Texture)ResourceLoader.Load($"res://dataFile/2D assets/Ladrilhos/Curvas/{id}.png");
+				CurrentTexture = (Texture)ResourceLoader.Load($"res://dataFile/2D assets/Ladrilhos/Curvas/{id}.png");
 			}
 		}catch{
 			GD.Print($"Error on import tile with type {type} and id: {id}");
-			return BaseWhite_texture;
+			CurrentTexture = BaseWhite_texture;
 		}
-		return BaseWhite_texture;
+		return CurrentTexture;
 	}
 
-	public void addTile(Tile CurrentTile){
+	public void addTile(Tile CurrentTile, bool UpdateInfo){
 		if(CurrentTile.type == "null"){return;}
 		Vector2 TilePosition = getTilePos(new Vector2(CurrentTile.x, CurrentTile.y));
 		bool ComparePosition(string CurrentName){
@@ -712,11 +708,11 @@ public class ArenaCoder : Node2D {
 		}
 		Sprite CurrentChild = (Sprite)TileBase_scene.Instance();
 		CurrentChild.Texture = loadTextureTile(CurrentTile.type, CurrentTile.id);
-		CurrentChild.ZIndex = getZindex(CurrentTile.type, CurrentTile.id);
 		CurrentChild.Position = TilePosition;
 		CurrentChild.RotationDegrees = CurrentTile.degrees;
 		CurrentChild.Name = $"{(string)encode(CurrentTile).Substring(0, 4)}";
 		CurrentChild.Set("Info",  (string)encode(CurrentTile));
+		CurrentChild.Set("UpdateInfo",  UpdateInfo);
 
 		//Case underline tile:
 		if(UnderLineTiles.Contains($"{CurrentTile.type}{CurrentTile.id}")){
@@ -828,7 +824,7 @@ public class ArenaCoder : Node2D {
 				if(code.Length == 9){//Normal tile
 					CurrentTile = decode(code);
 					if(filterFlags(CurrentTile)){continue;}
-					addTile(CurrentTile);
+					addTile(CurrentTile, false);
 
 				}else if(code.Length == 1){//Probaly config code
 					try{
