@@ -40,10 +40,6 @@ public class Menu : Control{
 				CooldownGet = (ulong)OS.GetSystemTimeMsecs() + 1000;
 				return;
 			}
-			Label Notification_instance = (Label)Notification_scene.Instance();
-			Notification_instance.Text = "Código de arena copiado";
-			Notification_instance.Set("custom_colors/font_color", new Color(0, 0.8f, 0));
-			CallDeferred("add_child", Notification_instance);
 			CooldownGet = (ulong)OS.GetSystemTimeMsecs() + 500;
 		}
 	}

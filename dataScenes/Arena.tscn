@@ -273,6 +273,10 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
+[node name="Temp" type="Control" parent="ViewMain/Menu"]
+margin_right = 40.0
+margin_bottom = 40.0
+
 [node name="Camera" type="Camera2D" parent="ViewMain"]
 current = true
 zoom = Vector2( 2, 2 )

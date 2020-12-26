@@ -98,6 +98,18 @@ public class ViewMain : Node2D{
 			GetNode<Node2D>("/root/Main/Arena/Editor").Call("tileEvent", CurrentPosition, 3);
 		}
 
+		if (Input.IsActionJustPressed("tile_copy")){
+			GetNode<Node2D>("/root/Main/Arena/Editor").Call("tileEvent", CurrentPosition, 4);
+		}
+
+		if (Input.IsActionJustPressed("tile_paste")){
+			GetNode<Node2D>("/root/Main/Arena/Editor").Call("tileEvent", CurrentPosition, 5);
+		}
+
+		if (Input.IsActionJustPressed("tile_rotate")){
+			GetNode<Node2D>("/root/Main/Arena/Editor").Call("tileEvent", CurrentPosition, 6);
+		}
+
 		if(mod){
 			GoToPos((Vector2)GetNode<Node2D>("/root/Main/Arena/Editor").Call("getTilePos", (Vector2)CurrentPosition));
 		}

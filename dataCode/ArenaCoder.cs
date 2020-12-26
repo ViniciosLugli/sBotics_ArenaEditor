@@ -439,6 +439,7 @@ public class ArenaCoder : Node2D {
 	
 	//Geral
 	string lastType = "r";
+	Tile LocalClipboard = new Tile(0, 0, 0, "null", 0);
 	bool NoisedTiles = false;
 	Tile RescueDat = new Tile(0, 0, 0, "null", 0);
 	Tile EndingDat = new Tile(0, 0, 0, "null", 0);
@@ -571,32 +572,58 @@ public class ArenaCoder : Node2D {
 		return false;
 	}
 
-	// public bool straightFlags(byte id){
-	// 	if(id == 73){
-	// 		if(RescueDat.type != "null" && (EndingDat.type == "null")){
-	// 			return false;
-	// 		}else{
-				
-	// 		}
-	// 	}
-	// }
-
-	// public bool curvedFlags(){
-		
-	// }
+	void PopNotification(string LabelText, Color ColorText){
+		Label Notification_instance = (Label)Notification_scene.Instance();
+		Notification_instance.Text = LabelText;
+		Notification_instance.Set("custom_colors/font_color", ColorText);
+		foreach(Label child in GetNode<Node2D>("/root/Main/Arena/ViewMain").GetNode<Control>("Menu").GetNode<Control>("Temp").GetChildren()){
+			child.CallDeferred("free");
+		}
+		GetNode<Node2D>("/root/Main/Arena/ViewMain").GetNode<Control>("Menu").GetNode<Control>("Temp").CallDeferred("add_child", Notification_instance);
+	}
 
 	public void tileEvent(Vector2 TileLocation, byte Event){
 		Sprite TileChild = (Sprite)GetNodeOrNull<Sprite>($"{TileLocation.x}0{TileLocation.y}0");
 		Tile CurrentTile = new Tile(0, 0, 0, "null", 0);
-		if(TileChild != null){
+		if(Event == 6){
+			if(TileChild != null){
+				CurrentTile = decode((string)TileChild.Get("Info"));
+				CurrentTile.degrees = (short)(((CurrentTile.degrees + 90) == 360) ? 0 : (CurrentTile.degrees + 90));
+			}else{
+				CurrentTile.type = lastType;
+				CurrentTile.id = 0;
+				CurrentTile.x = (byte)TileLocation.x;
+				CurrentTile.y = (byte)TileLocation.y;
+				CurrentTile.degrees = (short)(((CurrentTile.degrees + 90) == 360) ? 0 : (CurrentTile.degrees + 90));
+			}
+			PopNotification("Ladrilho rotacionado", new Color("#3ebc51"));
+		}else if(Event == 5){
+			CurrentTile = LocalClipboard;
+			CurrentTile.x = (byte)TileLocation.x;
+			CurrentTile.y = (byte)TileLocation.y;
+			PopNotification("Ladrilho colado", new Color("#3ebc51"));
+		}else if(Event == 4){
+			if(TileChild != null){
+				LocalClipboard = decode((string)TileChild.Get("Info"));
+			}else{
+				CurrentTile.type = lastType;
+				CurrentTile.id = 0;
+				CurrentTile.x = (byte)TileLocation.x;
+				CurrentTile.y = (byte)TileLocation.y;
+				LocalClipboard = CurrentTile;
+			}
+			PopNotification("Ladrilho copiado", new Color("#daa520"));
+		}else if(TileChild != null){
 			CurrentTile = decode((string)TileChild.Get("Info"));
 			if(Event == 3){
 				TileChild.CallDeferred("free");
+				PopNotification("Ladrilho deletado", new Color("#f2421b"));
 				return;
 			}else if(Event == 2){
 				CurrentTile.type = (CurrentTile.type == "r") ? "c" : "r";
 				lastType = CurrentTile.type;
 				CurrentTile.id = 0;
+				PopNotification("Tipo de ladrilho modificado", new Color("#07B0F2"));
 			}else if(CurrentTile.type == "r"){
 				byte maxValue = (byte)(straightList.Count-1);
 				byte CurrentIndex = (byte)straightList.IndexOf((byte)CurrentTile.id);
@@ -614,6 +641,7 @@ public class ArenaCoder : Node2D {
 						CurrentTile.id = straightList[++CurrentIndex];
 					}
 				}
+				PopNotification("Ladrilho alterado", new Color("#1fe2f0"));
 			}else if(CurrentTile.type == "c"){
 				byte maxValue = (byte)(curvedList.Count-1);
 				byte CurrentIndex = (byte)curvedList.IndexOf((byte)CurrentTile.id);
@@ -630,17 +658,20 @@ public class ArenaCoder : Node2D {
 						CurrentTile.id = curvedList[++CurrentIndex];
 					}
 				}
+				PopNotification("Ladrilho alterado", new Color("#1fe2f0"));
 			}else{
 				CurrentTile.type = lastType;
 				CurrentTile.id = 0;
 				CurrentTile.x = (byte)TileLocation.x;
 				CurrentTile.y = (byte)TileLocation.y;
+				PopNotification("Ladrilho alterado", new Color("#1fe2f0"));
 			}
 		}else{
 			CurrentTile.type = lastType;
 			CurrentTile.id = 0;
 			CurrentTile.x = (byte)TileLocation.x;
 			CurrentTile.y = (byte)TileLocation.y;
+			PopNotification("Ladrilho alterado", new Color("#1fe2f0"));
 		}
 		addTile(CurrentTile, true);
 	}
@@ -792,23 +823,12 @@ public class ArenaCoder : Node2D {
 		if(RescueTyp != 1){
 			Output += $",{RescueTyp}";
 		}
+		PopNotification("Código de arena copiado", new Color(0, 0.8f, 0));
 		return Output+additional;
 	}
 
 	public void regenerateArena(string arena_code){
 		System.Threading.Tasks.Task CurrentArenaThread = System.Threading.Tasks.Task.Factory.StartNew(() => {
-			void PopNotification(bool result){
-				Label Notification_instance = (Label)Notification_scene.Instance();
-				if(result){
-					Notification_instance.Text = "Arena importada com sucesso";
-					Notification_instance.Set("custom_colors/font_color", new Color(0, 0.8f, 0));
-				}else{
-					Notification_instance.Text = "Não foi possível importar a arena";
-					Notification_instance.Set("custom_colors/font_color", new Color(0.8f, 0, 0));
-				}
-				GetNode<Node2D>("/root/Main/Arena/ViewMain").GetNode<Control>("Menu").CallDeferred("add_child", Notification_instance);
-			}
-
 			resetArena();
 			string[] final_code = filter(arena_code);
 			Tile CurrentTile;
@@ -1058,13 +1078,13 @@ public class ArenaCoder : Node2D {
 					  	}
 					}catch (Exception ex){
 						GD.Print($"Error on load switch code: {code}, with exception: {ex.Message}");
-						PopNotification(false);
+						PopNotification("Não foi possível importar a arena", new Color(0.8f, 0, 0));
 					}
 				}
 			}
 			loadFlags();
 			updateInfoMenu();
-			PopNotification(true);
+			PopNotification("Arena importada com sucesso", new Color(0, 0.8f, 0));
 		});	
 	}
 
