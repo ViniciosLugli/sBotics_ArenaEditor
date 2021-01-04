@@ -440,13 +440,15 @@ public class ArenaCoder : Node2D {
 	//Geral
 	string lastType = "r";
 	Tile LocalClipboard = new Tile(0, 0, 0, "null", 0);
-	bool NoisedTiles = false;
-	Tile RescueDat = new Tile(0, 0, 0, "null", 0);
-	Tile EndingDat = new Tile(0, 0, 0, "null", 0);
+	//bool NoisedTiles = false;
+	Tile CustomDat = new Tile(0, 0, 0, "null", 0);
 	Vector2 OffsetRescue =  new Vector2(10, 256);
 	string[] UnderLineTiles = new string[]{"r26", "r27", "r28", "r29", "r30", "r31", "r38", "r40", "r42", "r44", "r46", "r48", "r53", "r59", "r62", "r65", "r70"};
 	List<byte> straightList = new List<byte>();
 	List<byte> curvedList = new List<byte>();
+	byte maxValueStraight = 1;
+	byte maxValueCurved = 1;
+
 	//
 
 
@@ -529,8 +531,7 @@ public class ArenaCoder : Node2D {
 	}
 
 	private void resetArena(){//reset all default
-		RescueDat = new Tile(0, 0, 0, "null", 0);
-		EndingDat = new Tile(0, 0, 0, "null", 0);
+		CustomDat = new Tile(0, 0, 0, "null", 0);
 		BoolEndCd = false;
 		BoolNoPos = false;
 		BoolPrgso = false;
@@ -565,9 +566,14 @@ public class ArenaCoder : Node2D {
 	}
 
 	public bool filterFlags(Tile ctile){
-		if((ctile.type == "r") && (ctile.id == 73) && (RescueDat.type == "null") && (EndingDat.type == "null")){
-			RescueDat = ctile;
-			return true;
+		if((CustomDat.type == "null")){
+			if((ctile.type == "r") && (ctile.id == 73)){//REGATE
+				CustomDat = ctile;
+				return true;
+			}else if((ctile.type == "r") && ((ctile.id == 78) || (ctile.id == 79) || (ctile.id == 80)) ){//FINAL
+				CustomDat = ctile;
+				return true;
+			}
 		}
 		return false;
 	}
@@ -585,7 +591,8 @@ public class ArenaCoder : Node2D {
 	public void tileEvent(Vector2 TileLocation, byte Event){
 		Sprite TileChild = (Sprite)GetNodeOrNull<Sprite>($"{TileLocation.x}0{TileLocation.y}0");
 		Tile CurrentTile = new Tile(0, 0, 0, "null", 0);
-		if(Event == 6){
+
+		if(Event == 6){//ROTATE TILE
 			if(TileChild != null){
 				CurrentTile = decode((string)TileChild.Get("Info"));
 				CurrentTile.degrees = (short)(((CurrentTile.degrees + 90) == 360) ? 0 : (CurrentTile.degrees + 90));
@@ -597,12 +604,14 @@ public class ArenaCoder : Node2D {
 				CurrentTile.degrees = (short)(((CurrentTile.degrees + 90) == 360) ? 0 : (CurrentTile.degrees + 90));
 			}
 			PopNotification("Ladrilho rotacionado", new Color("#3ebc51"));
-		}else if(Event == 5){
+
+		}else if(Event == 5){//PASTE TILE
 			CurrentTile = LocalClipboard;
 			CurrentTile.x = (byte)TileLocation.x;
 			CurrentTile.y = (byte)TileLocation.y;
 			PopNotification("Ladrilho colado", new Color("#3ebc51"));
-		}else if(Event == 4){
+
+		}else if(Event == 4){//COPY TILE
 			if(TileChild != null){
 				LocalClipboard = decode((string)TileChild.Get("Info"));
 			}else{
@@ -613,60 +622,58 @@ public class ArenaCoder : Node2D {
 				LocalClipboard = CurrentTile;
 			}
 			PopNotification("Ladrilho copiado", new Color("#daa520"));
+
 		}else if(TileChild != null){
 			CurrentTile = decode((string)TileChild.Get("Info"));
-			if(Event == 3){
+			string CustomBase = $"{CustomDat.type}{CustomDat.id}";
+
+			if(Event == 3){//DELETE
 				TileChild.CallDeferred("free");
 				PopNotification("Ladrilho deletado", new Color("#f2421b"));
 				return;
-			}else if(Event == 2){
+
+			}else if(Event == 2){//CHANGE TYPE
 				CurrentTile.type = (CurrentTile.type == "r") ? "c" : "r";
 				lastType = CurrentTile.type;
 				CurrentTile.id = 0;
 				PopNotification("Tipo de ladrilho modificado", new Color("#07B0F2"));
-			}else if(CurrentTile.type == "r"){
-				byte maxValue = (byte)(straightList.Count-1);
-				byte CurrentIndex = (byte)straightList.IndexOf((byte)CurrentTile.id);
-				if(Event == 0){
-					if(CurrentIndex <= 0){
 
-						CurrentTile.id = straightList[maxValue];
-					}else{
-						CurrentTile.id = straightList[--CurrentIndex];
-					}
-				}else if(Event == 1){
-					if(CurrentIndex >= maxValue){
-						CurrentTile.id = straightList[0];
-					}else{
-						CurrentTile.id = straightList[++CurrentIndex];
-					}
-				}
-				PopNotification("Ladrilho alterado", new Color("#1fe2f0"));
-			}else if(CurrentTile.type == "c"){
-				byte maxValue = (byte)(curvedList.Count-1);
-				byte CurrentIndex = (byte)curvedList.IndexOf((byte)CurrentTile.id);
-				if(Event == 0){
+			}else if(CurrentTile.type == "r"){//CHANGE TILE
+				byte CurrentIndex = (byte)straightList.IndexOf((byte)CurrentTile.id);
+				try{
+					CurrentTile.id = straightList[CurrentIndex-(-1*((Event*2)-1))];
+				}catch{
 					if(CurrentIndex <= 0){
-						CurrentTile.id = curvedList[maxValue];
-					}else{
-						CurrentTile.id = curvedList[--CurrentIndex];
-					}
-				}else if(Event == 1){
-					if(CurrentIndex >= maxValue){
-						CurrentTile.id = curvedList[0];
-					}else{
-						CurrentTile.id = curvedList[++CurrentIndex];
+						CurrentTile.id = straightList[maxValueStraight];
+					}else if(CurrentIndex >= maxValueStraight){
+						CurrentTile.id = straightList[0];
 					}
 				}
+
 				PopNotification("Ladrilho alterado", new Color("#1fe2f0"));
-			}else{
+
+			}else if(CurrentTile.type == "c"){//CHANGE TILE
+				byte CurrentIndex = (byte)curvedList.IndexOf((byte)CurrentTile.id);
+				try{
+					CurrentTile.id = curvedList[CurrentIndex-(-1*((Event*2)-1))];
+				}catch{
+					if(CurrentIndex <= 0){
+						CurrentTile.id = curvedList[maxValueCurved];
+					}else if(CurrentIndex >= maxValueCurved){
+						CurrentTile.id = curvedList[0];
+					}
+				}
+
+				PopNotification("Ladrilho alterado", new Color("#1fe2f0"));
+
+			}else{//ELSE ALL
 				CurrentTile.type = lastType;
 				CurrentTile.id = 0;
 				CurrentTile.x = (byte)TileLocation.x;
 				CurrentTile.y = (byte)TileLocation.y;
 				PopNotification("Ladrilho alterado", new Color("#1fe2f0"));
 			}
-		}else{
+		}else{// ELSE ALL
 			CurrentTile.type = lastType;
 			CurrentTile.id = 0;
 			CurrentTile.x = (byte)TileLocation.x;
@@ -695,8 +702,8 @@ public class ArenaCoder : Node2D {
 	}
 
 	public void loadFlags(){
-		if(RescueDat.type != "null"){
-			addTile(RescueDat, false);
+		if(CustomDat.type != "null"){
+			addTile(CustomDat, false);
 		}
 	}
 
@@ -1100,8 +1107,12 @@ public class ArenaCoder : Node2D {
 				curvedList.Add((byte)CurrentValue);
 			}
 		}
+
 		straightList.Sort();
 		curvedList.Sort();
+
+		maxValueStraight = (byte)(straightList.Count-1);
+		maxValueCurved = (byte)(curvedList.Count-1);
 	}
 
 	public override void _Ready(){
@@ -1111,7 +1122,6 @@ public class ArenaCoder : Node2D {
 		}
 	}
 
-	public override void _Process(float delta){
-		
-	}
+	// public override void _Process(float delta){
+	// }
 }
