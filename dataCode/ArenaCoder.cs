@@ -561,21 +561,8 @@ public class ArenaCoder : Node2D {
 		RescueTyp = 1;
 		additional = "";
 		foreach(Sprite child in this.GetChildren()){
-			child.CallDeferred("free");
+			removeTile(child);
 		}
-	}
-
-	public bool filterFlags(Tile ctile){
-		if((CustomDat.type == "null")){
-			if((ctile.type == "r") && (ctile.id == 73)){//REGATE
-				CustomDat = ctile;
-				return true;
-			}else if((ctile.type == "r") && ((ctile.id == 78) || (ctile.id == 79) || (ctile.id == 80)) ){//FINAL
-				CustomDat = ctile;
-				return true;
-			}
-		}
-		return false;
 	}
 
 	void PopNotification(string LabelText, Color ColorText){
@@ -586,6 +573,15 @@ public class ArenaCoder : Node2D {
 			child.CallDeferred("free");
 		}
 		GetNode<Node2D>("/root/Main/Arena/ViewMain").GetNode<Control>("Menu").GetNode<Control>("Temp").CallDeferred("add_child", Notification_instance);
+	}
+
+	public bool checkCustomTile(Tile cTile){//VERIFICA SE LADRILHO É FINAL
+		if((CustomDat.type != "null")){
+			if(($"{cTile.type}{cTile.id}" == "r73") || ((cTile.type == "r") && (endTiles.IndexOf((byte)cTile.id) != -1)) ){
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public void tileEvent(Vector2 TileLocation, byte Event){
@@ -607,13 +603,32 @@ public class ArenaCoder : Node2D {
 
 		}else if(Event == 5){//PASTE TILE
 			CurrentTile = LocalClipboard;
+			if(TileChild != null){
+				if(checkCustomTile(decode((string)TileChild.Get("Info")))){
+					removeTile(TileChild);
+				}
+			}else if(checkCustomTile(CurrentTile)){
+				PopNotification("Ladrilho não permitido", new Color("#E62044"));
+				return;
+			}
+
 			CurrentTile.x = (byte)TileLocation.x;
 			CurrentTile.y = (byte)TileLocation.y;
 			PopNotification("Ladrilho colado", new Color("#3ebc51"));
 
 		}else if(Event == 4){//COPY TILE
+
 			if(TileChild != null){
 				LocalClipboard = decode((string)TileChild.Get("Info"));
+				if(checkCustomTile(LocalClipboard)){
+					PopNotification("Ladrilho não permitido", new Color("#E62044"));
+					CurrentTile.type = lastType;
+					CurrentTile.id = 0;
+					CurrentTile.x = (byte)TileLocation.x;
+					CurrentTile.y = (byte)TileLocation.y;
+					LocalClipboard = CurrentTile;
+					return;
+				}
 			}else{
 				CurrentTile.type = lastType;
 				CurrentTile.id = 0;
@@ -624,10 +639,11 @@ public class ArenaCoder : Node2D {
 			PopNotification("Ladrilho copiado", new Color("#daa520"));
 
 		}else if(TileChild != null){
+
 			CurrentTile = decode((string)TileChild.Get("Info"));
 
 			if(Event == 3){//DELETE
-				TileChild.CallDeferred("free");
+				removeTile(TileChild);
 				PopNotification("Ladrilho deletado", new Color("#f2421b"));
 				return;
 
@@ -642,13 +658,12 @@ public class ArenaCoder : Node2D {
 				byte CurrentIndex = (byte)straightList.IndexOf((byte)CurrentTile.id);
 				try{
 					CurrentTile.id = straightList[CurrentIndex-(-1*((Event*2)-1))];
-					if((CustomDat.type != "null")){
-						if(($"{CurrentTile.type}{CurrentTile.id}" == "r73") || ((CurrentTile.type == "r") && (endTiles.IndexOf((byte)CurrentTile.id) != -1)) ){
-							goto SaveTryR;
-						}
+					if(checkCustomTile(decode((string)TileChild.Get("Info")))){
+						removeTile(TileChild);
+					}else if(checkCustomTile(CurrentTile)){
+						goto SaveTryR;
 					}
-				}catch (Exception ex) {
-					GD.Print($"aaa: {ex.Message}");
+				}catch{
 					if(CurrentIndex <= 0){
 						CurrentTile.id = straightList[maxValueStraight];
 					}else if(CurrentIndex >= maxValueStraight){
@@ -690,7 +705,11 @@ public class ArenaCoder : Node2D {
 			CurrentTile.y = (byte)TileLocation.y;
 			PopNotification("Ladrilho alterado", new Color("#1fe2f0"));
 		}
-		addTile(CurrentTile, true);
+		if(filterFlags(CurrentTile)){
+			loadFlags();
+		}else{
+			addTile(CurrentTile, true);
+		}
 	}
 
 	public void updateInfoMenu(){
@@ -711,9 +730,24 @@ public class ArenaCoder : Node2D {
 		}
 	}
 
+	public bool filterFlags(Tile ctile){//DETECTA E SETA A SALA 3 E FINAL DE PISTA
+		if((CustomDat.type == "null")){
+			if((ctile.type == "r") && (ctile.id == 73)){//REGATE
+				CustomDat = ctile;
+				GD.Print("Added rescue");
+				return true;
+			}else if((ctile.type == "r") && (endTiles.IndexOf((byte)ctile.id) != -1)){//FINAL
+				CustomDat = ctile;
+				GD.Print("Added end round");
+				return true;
+			}
+		}
+		return false;
+	}
+
 	public void loadFlags(){
 		if(CustomDat.type != "null"){
-			addTile(CustomDat, false);
+			addTile(CustomDat, true);
 		}
 	}
 
@@ -736,6 +770,15 @@ public class ArenaCoder : Node2D {
 		return CurrentTexture;
 	}
 
+	public void removeTile(Sprite Child){
+		Tile CurrentTile = decode((string)Child.Get("Info"));
+		if(checkCustomTile(CurrentTile)){
+			CustomDat = new Tile(0, 0, 0, "null", 0);
+			GD.Print("Removed custom tile");
+		}
+		Child.CallDeferred("free");
+	}
+
 	public void addTile(Tile CurrentTile, bool UpdateInfo){
 		if(CurrentTile.type == "null"){return;}
 		Vector2 TilePosition = getTilePos(new Vector2(CurrentTile.x, CurrentTile.y));
@@ -747,7 +790,7 @@ public class ArenaCoder : Node2D {
 		foreach(Sprite child in this.GetChildren()){
 			try{
 				if(ComparePosition(child.Name)){
-					child.CallDeferred("free");
+					removeTile(child);
 					break;
 				}
 			}catch{
