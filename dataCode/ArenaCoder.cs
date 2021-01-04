@@ -442,13 +442,13 @@ public class ArenaCoder : Node2D {
 	Tile LocalClipboard = new Tile(0, 0, 0, "null", 0);
 	//bool NoisedTiles = false;
 	Tile CustomDat = new Tile(0, 0, 0, "null", 0);
-	Vector2 OffsetRescue =  new Vector2(10, 256);
+	Vector2 OffsetRescue =  new Vector2(0, 256);
 	string[] UnderLineTiles = new string[]{"r26", "r27", "r28", "r29", "r30", "r31", "r38", "r40", "r42", "r44", "r46", "r48", "r53", "r59", "r62", "r65", "r70"};
+	List<byte> endTiles = new List<byte>();
 	List<byte> straightList = new List<byte>();
 	List<byte> curvedList = new List<byte>();
 	byte maxValueStraight = 1;
 	byte maxValueCurved = 1;
-
 	//
 
 
@@ -625,7 +625,6 @@ public class ArenaCoder : Node2D {
 
 		}else if(TileChild != null){
 			CurrentTile = decode((string)TileChild.Get("Info"));
-			string CustomBase = $"{CustomDat.type}{CustomDat.id}";
 
 			if(Event == 3){//DELETE
 				TileChild.CallDeferred("free");
@@ -639,14 +638,23 @@ public class ArenaCoder : Node2D {
 				PopNotification("Tipo de ladrilho modificado", new Color("#07B0F2"));
 
 			}else if(CurrentTile.type == "r"){//CHANGE TILE
+				SaveTryR:
 				byte CurrentIndex = (byte)straightList.IndexOf((byte)CurrentTile.id);
 				try{
 					CurrentTile.id = straightList[CurrentIndex-(-1*((Event*2)-1))];
-				}catch{
+					if((CustomDat.type != "null")){
+						if(($"{CurrentTile.type}{CurrentTile.id}" == "r73") || ((CurrentTile.type == "r") && (endTiles.IndexOf((byte)CurrentTile.id) != -1)) ){
+							goto SaveTryR;
+						}
+					}
+				}catch (Exception ex) {
+					GD.Print($"aaa: {ex.Message}");
 					if(CurrentIndex <= 0){
 						CurrentTile.id = straightList[maxValueStraight];
 					}else if(CurrentIndex >= maxValueStraight){
 						CurrentTile.id = straightList[0];
+					}else{
+						CurrentTile.id = 0;
 					}
 				}
 
@@ -661,6 +669,8 @@ public class ArenaCoder : Node2D {
 						CurrentTile.id = curvedList[maxValueCurved];
 					}else if(CurrentIndex >= maxValueCurved){
 						CurrentTile.id = curvedList[0];
+					}else{
+						CurrentTile.id = 0;
 					}
 				}
 
@@ -673,7 +683,7 @@ public class ArenaCoder : Node2D {
 				CurrentTile.y = (byte)TileLocation.y;
 				PopNotification("Ladrilho alterado", new Color("#1fe2f0"));
 			}
-		}else{// ELSE ALL
+		}else{// ELSE ALL 	
 			CurrentTile.type = lastType;
 			CurrentTile.id = 0;
 			CurrentTile.x = (byte)TileLocation.x;
@@ -1107,6 +1117,10 @@ public class ArenaCoder : Node2D {
 				curvedList.Add((byte)CurrentValue);
 			}
 		}
+
+		endTiles.Add(78);
+		endTiles.Add(79);
+		endTiles.Add(80);
 
 		straightList.Sort();
 		curvedList.Sort();
