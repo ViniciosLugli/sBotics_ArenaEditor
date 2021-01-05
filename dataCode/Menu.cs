@@ -7,6 +7,10 @@ public class Menu : Control{
 	private ulong CooldownSet = (ulong)OS.GetSystemTimeMsecs();
 	private ulong CooldownGet = (ulong)OS.GetSystemTimeMsecs();
 
+	public override void _Ready(){
+
+	}
+
 	private void _on_ToggleMenuButton_pressed(){
 		if(!GetNode<Control>("LeftSide").GetNode<AnimationPlayer>("AnimationPlayer").IsPlaying()){
 			if(GetNode<Control>("LeftSide").RectPosition.x < 0){

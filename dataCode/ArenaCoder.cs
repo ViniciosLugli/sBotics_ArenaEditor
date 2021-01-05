@@ -890,9 +890,16 @@ public class ArenaCoder : Node2D {
 	public void regenerateArena(string arena_code){
 		System.Threading.Tasks.Task CurrentArenaThread = System.Threading.Tasks.Task.Factory.StartNew(() => {
 			resetArena();
+
 			string[] final_code = filter(arena_code);
 			Tile CurrentTile;
+			PopNotification("", new Color("#ffffff"));
+			GetNode<Node2D>("/root/Main/Arena/ViewMain").GetNode<Control>("Menu").GetNode<ProgressBar>("ProgressBar").Visible = true;
+			GetNode<Node2D>("/root/Main/Arena/ViewMain").GetNode<Control>("Menu").GetNode<ProgressBar>("ProgressBar").Value = 0;
+			float MedCount = 100f / (float)final_code.Count();
+			GD.Print($"MedCount: {MedCount}");
 			foreach (string code in final_code){
+				GetNode<Node2D>("/root/Main/Arena/ViewMain").GetNode<Control>("Menu").GetNode<ProgressBar>("ProgressBar").Value += MedCount;
 				if(code.Length > 9){
 					if((code.Substring(0, 10) != "Descricao:")){
 						code.Replace(" ", "");
@@ -1142,6 +1149,8 @@ public class ArenaCoder : Node2D {
 					}
 				}
 			}
+			GetNode<Node2D>("/root/Main/Arena/ViewMain").GetNode<Control>("Menu").GetNode<ProgressBar>("ProgressBar").Visible = false;
+			GetNode<Node2D>("/root/Main/Arena/ViewMain").GetNode<Control>("Menu").GetNode<ProgressBar>("ProgressBar").Value = 0;
 			loadFlags();
 			updateInfoMenu();
 			PopNotification("Arena importada com sucesso", new Color(0, 0.8f, 0));

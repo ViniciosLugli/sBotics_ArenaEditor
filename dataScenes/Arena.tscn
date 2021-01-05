@@ -1,8 +1,9 @@
-[gd_scene load_steps=34 format=2]
+[gd_scene load_steps=40 format=2]
 
 [ext_resource path="res://dataCode/ArenaCoder.cs" type="Script" id=1]
 [ext_resource path="res://dataCode/ViewMain.cs" type="Script" id=2]
 [ext_resource path="res://dataFile/2D assets/Outros/icons8-menu-100.png" type="Texture" id=3]
+[ext_resource path="res://dataFile/fonts/UbuntuMono-Bold.ttf" type="DynamicFontData" id=4]
 [ext_resource path="res://dataFile/2D assets/Complementares/Ladrilho_Atual.png" type="Texture" id=5]
 [ext_resource path="res://dataCode/Menu.cs" type="Script" id=6]
 [ext_resource path="res://dataFile/fonts/UbuntuMono-Regular.ttf" type="DynamicFontData" id=7]
@@ -10,6 +11,7 @@
 [ext_resource path="res://dataFile/2D assets/Outros/icons8-arrow-100.png" type="Texture" id=9]
 [ext_resource path="res://dataFile/2D assets/Outros/icons8-stadium-80.png" type="Texture" id=10]
 [ext_resource path="res://dataFile/2D assets/Outros/summer_96px.png" type="Texture" id=11]
+[ext_resource path="res://dataFile/fonts/FiraCode-Medium.ttf" type="DynamicFontData" id=12]
 
 [sub_resource type="Animation" id=1]
 resource_name = "InLeftMenu"
@@ -92,6 +94,10 @@ bg_color = Color( 0.196078, 0.196078, 0.196078, 1 )
 
 [sub_resource type="StyleBoxEmpty" id=17]
 
+[sub_resource type="DynamicFont" id=24]
+size = 32
+font_data = ExtResource( 4 )
+
 [sub_resource type="StyleBoxEmpty" id=18]
 
 [sub_resource type="StyleBoxEmpty" id=19]
@@ -105,6 +111,18 @@ bg_color = Color( 0.196078, 0.196078, 0.196078, 1 )
 [sub_resource type="DynamicFont" id=23]
 size = 40
 font_data = ExtResource( 7 )
+
+[sub_resource type="StyleBoxFlat" id=25]
+bg_color = Color( 0.392157, 0.705882, 0.392157, 1 )
+
+[sub_resource type="StyleBoxFlat" id=28]
+bg_color = Color( 0.196078, 0.196078, 0.196078, 1 )
+
+[sub_resource type="DynamicFont" id=27]
+size = 30
+use_mipmaps = true
+use_filter = true
+font_data = ExtResource( 12 )
 
 [node name="Arena" type="Node"]
 __meta__ = {
@@ -209,6 +227,18 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
+[node name="TileManualSelector" type="ItemList" parent="ViewMain/Menu/LeftSide"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = -644.481
+margin_top = 397.348
+margin_right = -394.481
+margin_bottom = -532.652
+custom_fonts/font = SubResource( 24 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
 [node name="ColorRectTop" type="ColorRect" parent="ViewMain/Menu"]
 margin_right = 1920.0
 margin_bottom = 80.0
@@ -273,9 +303,30 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
+[node name="ProgressBar" type="ProgressBar" parent="ViewMain/Menu"]
+visible = false
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = 100.0
+margin_top = 15.0
+margin_right = -1290.0
+margin_bottom = -15.0
+custom_styles/fg = SubResource( 25 )
+custom_styles/bg = SubResource( 28 )
+custom_fonts/font = SubResource( 27 )
+custom_colors/font_color = Color( 1, 1, 1, 0 )
+step = 1.0
+rounded = true
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
 [node name="Temp" type="Control" parent="ViewMain/Menu"]
 margin_right = 40.0
 margin_bottom = 40.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
 [node name="Camera" type="Camera2D" parent="ViewMain"]
 current = true
