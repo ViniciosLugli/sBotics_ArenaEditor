@@ -17,5 +17,9 @@ shape = SubResource( 1 )
 
 [node name="UnderLineSprite" type="Sprite" parent="."]
 visible = false
+
+[node name="Tween" type="Tween" parent="."]
+
 [connection signal="mouse_entered" from="." to="." method="_on_Area_mouse_entered"]
 [connection signal="mouse_exited" from="." to="." method="_on_Area_mouse_exited"]
+[connection signal="tween_all_completed" from="Tween" to="." method="_on_Tween_tween_all_completed"]

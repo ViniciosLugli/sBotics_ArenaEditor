@@ -812,6 +812,7 @@ public class ArenaCoder : Node2D {
 			Sprite Filter_child = new Sprite();
 			Filter_child.Texture = (Texture)ResourceLoader.Load($"res://dataFile/2D assets/Complementares/Filtro_Azul_Linha.png");
 			Filter_child.ZIndex = 1;
+			Filter_child.Name = "Filter";
 			CurrentChild.CallDeferred("add_child", Filter_child);
 			Area2D CurrentUnderLine = (Area2D)UnderLine_scene.Instance();
 			CurrentUnderLine.GetNode<Sprite>("UnderLineSprite").Texture = (Texture)ResourceLoader.Load($"res://dataFile/2D assets/Ladrilhos/Retas/{CurrentTile.id}_.png");
@@ -894,12 +895,14 @@ public class ArenaCoder : Node2D {
 		string[] final_code = filter(arena_code);
 		Tile CurrentTile;
 		PopNotification("", new Color("#ffffff"));
-		GetNode<Node2D>("/root/Main/Arena/ViewMain").GetNode<Control>("Menu").GetNode<ProgressBar>("ProgressBar").Visible = true;
-		GetNode<Node2D>("/root/Main/Arena/ViewMain").GetNode<Control>("Menu").GetNode<ProgressBar>("ProgressBar").Value = 0;
-		float MedCount = 100f / (float)final_code.Count();
-		GD.Print($"MedCount: {MedCount}");
+		//GetNode<Node2D>("/root/Main/Arena/ViewMain").GetNode<Control>("Menu").GetNode<ProgressBar>("ProgressBar").Set("visible", true);
+		//GetNode<Node2D>("/root/Main/Arena/ViewMain").GetNode<Control>("Menu").GetNode<ProgressBar>("ProgressBar").Set("value", 0);
+		//float MedCount = 100f / (float)final_code.Count();
+		//float AcCount = 0f;
+		//GD.Print($"MedCount: {MedCount}");
 		foreach (string code in final_code){
-			GetNode<Node2D>("/root/Main/Arena/ViewMain").GetNode<Control>("Menu").GetNode<ProgressBar>("ProgressBar").Value += MedCount;
+			//AcCount += MedCount;
+			//GetNode<Node2D>("/root/Main/Arena/ViewMain").GetNode<Control>("Menu").GetNode<ProgressBar>("ProgressBar").Set("value", MedCount);
 			if(code.Length > 9){
 				if((code.Substring(0, 10) != "Descricao:")){
 					code.Replace(" ", "");
@@ -1149,8 +1152,8 @@ public class ArenaCoder : Node2D {
 				}
 			}
 		}
-		GetNode<Node2D>("/root/Main/Arena/ViewMain").GetNode<Control>("Menu").GetNode<ProgressBar>("ProgressBar").Visible = false;
-		GetNode<Node2D>("/root/Main/Arena/ViewMain").GetNode<Control>("Menu").GetNode<ProgressBar>("ProgressBar").Value = 0;
+		//GetNode<Node2D>("/root/Main/Arena/ViewMain").GetNode<Control>("Menu").GetNode<ProgressBar>("ProgressBar").Set("visible", false);
+		//GetNode<Node2D>("/root/Main/Arena/ViewMain").GetNode<Control>("Menu").GetNode<ProgressBar>("ProgressBar").Set("value", 0);
 		loadFlags();
 		updateInfoMenu();
 		PopNotification("Arena importada com sucesso", new Color(0, 0.8f, 0));
