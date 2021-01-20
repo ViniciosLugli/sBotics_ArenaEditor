@@ -94,11 +94,9 @@ bg_color = Color( 0.196078, 0.196078, 0.196078, 1 )
 
 [sub_resource type="StyleBoxEmpty" id=17]
 
-[sub_resource type="DynamicFont" id=24]
+[sub_resource type="DynamicFont" id=18]
 size = 32
 font_data = ExtResource( 4 )
-
-[sub_resource type="StyleBoxEmpty" id=18]
 
 [sub_resource type="StyleBoxEmpty" id=19]
 
@@ -108,14 +106,16 @@ font_data = ExtResource( 4 )
 
 [sub_resource type="StyleBoxEmpty" id=22]
 
-[sub_resource type="DynamicFont" id=23]
+[sub_resource type="StyleBoxEmpty" id=23]
+
+[sub_resource type="DynamicFont" id=24]
 size = 40
 font_data = ExtResource( 7 )
 
 [sub_resource type="StyleBoxFlat" id=25]
 bg_color = Color( 0.392157, 0.705882, 0.392157, 1 )
 
-[sub_resource type="StyleBoxFlat" id=28]
+[sub_resource type="StyleBoxFlat" id=26]
 bg_color = Color( 0.196078, 0.196078, 0.196078, 1 )
 
 [sub_resource type="DynamicFont" id=27]
@@ -234,7 +234,7 @@ margin_left = -644.481
 margin_top = 397.348
 margin_right = -394.481
 margin_bottom = -532.652
-custom_fonts/font = SubResource( 24 )
+custom_fonts/font = SubResource( 18 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -254,11 +254,11 @@ margin_right = 113.0
 margin_bottom = 110.0
 rect_scale = Vector2( 0.6, 0.6 )
 focus_mode = 0
-custom_styles/hover = SubResource( 18 )
-custom_styles/pressed = SubResource( 19 )
-custom_styles/focus = SubResource( 20 )
-custom_styles/disabled = SubResource( 21 )
-custom_styles/normal = SubResource( 22 )
+custom_styles/hover = SubResource( 19 )
+custom_styles/pressed = SubResource( 20 )
+custom_styles/focus = SubResource( 21 )
+custom_styles/disabled = SubResource( 22 )
+custom_styles/normal = SubResource( 23 )
 enabled_focus_mode = 0
 icon = ExtResource( 3 )
 __meta__ = {
@@ -281,7 +281,7 @@ margin_left = 532.881
 margin_top = 15.0
 margin_right = 1382.88
 margin_bottom = 65.0
-custom_fonts/font = SubResource( 23 )
+custom_fonts/font = SubResource( 24 )
 text = "-"
 align = 1
 valign = 1
@@ -294,7 +294,7 @@ margin_left = 1810.81
 margin_top = 14.8108
 margin_right = 1910.81
 margin_bottom = 64.8108
-custom_fonts/font = SubResource( 23 )
+custom_fonts/font = SubResource( 24 )
 custom_colors/font_color = Color( 1, 0.843137, 0, 1 )
 text = "-----"
 align = 2
@@ -312,7 +312,7 @@ margin_top = 15.0
 margin_right = -1290.0
 margin_bottom = -15.0
 custom_styles/fg = SubResource( 25 )
-custom_styles/bg = SubResource( 28 )
+custom_styles/bg = SubResource( 26 )
 custom_fonts/font = SubResource( 27 )
 custom_colors/font_color = Color( 1, 1, 1, 0 )
 step = 1.0
@@ -331,6 +331,7 @@ __meta__ = {
 [node name="Camera" type="Camera2D" parent="ViewMain"]
 current = true
 zoom = Vector2( 2, 2 )
+
 [connection signal="pressed" from="ViewMain/Menu/LeftSide/ImportArenaButton" to="ViewMain/Menu" method="_on_ImportArenaButton_pressed"]
 [connection signal="pressed" from="ViewMain/Menu/LeftSide/ExportArenaButton" to="ViewMain/Menu" method="_on_ExportArenaButton_pressed"]
 [connection signal="pressed" from="ViewMain/Menu/LeftSide/ConfigArenaButton" to="ViewMain/Menu" method="_on_ConfigArenaButton_pressed"]

@@ -4,3 +4,5 @@
 
 [node name="TileBase" type="Sprite"]
 script = ExtResource( 1 )
+
+[connection signal="visibility_changed" from="." to="." method="_on_TileBase_visibility_changed"]

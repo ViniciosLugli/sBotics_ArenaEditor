@@ -16,4 +16,10 @@ public class TileScript : Sprite{
 			ZIndex = 1;
 		}
 	}
+	private void _on_TileBase_visibility_changed(){
+		if(this.Name.Contains("@")){
+			//GD.Print($"APAGADO {this.Name}");
+			this.CallDeferred("free");
+		}
+	}
 }

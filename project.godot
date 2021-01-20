@@ -8,11 +8,6 @@
 
 config_version=4
 
-_global_script_classes=[  ]
-_global_script_class_icons={
-
-}
-
 [application]
 
 config/name="sBotics_ArenaEditor"
@@ -125,7 +120,7 @@ tile_rotate={
 
 [physics]
 
-2d/thread_model=2
+2d/physics_engine="GodotPhysics"
 
 [rendering]
 
@@ -133,7 +128,6 @@ quality/driver/driver_name="GLES2"
 quality/driver/fallback_to_gles2=true
 quality/intended_usage/framebuffer_allocation=0
 quality/intended_usage/framebuffer_allocation.mobile=0
-threads/thread_model=2
 vram_compression/import_etc=true
 vram_compression/import_etc2=false
 quality/directional_shadow/size=2048
