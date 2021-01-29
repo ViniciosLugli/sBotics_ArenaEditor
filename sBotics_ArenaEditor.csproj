@@ -1,6 +1,8 @@
 <Project Sdk="Godot.NET.Sdk/3.2.4">
   <PropertyGroup>
     <TargetFramework>net472</TargetFramework>
-    <RootNamespace>ArenaCoder_scene</RootNamespace>
   </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Godot.NET.Sdk" Version="3.2.4" />
+  </ItemGroup>
 </Project>

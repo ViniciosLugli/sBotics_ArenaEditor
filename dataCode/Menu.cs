@@ -28,7 +28,6 @@ public class Menu : Control{
 				GetNode<Node2D>("/root/Main/Arena/Editor").Call("regenerateArena", OS.Clipboard);
 			}catch{
 				GD.Print("Problem to import from clipboard");
-				return;
 			}
 			CooldownSet = (ulong)OS.GetSystemTimeMsecs() + 1000;
 		}
@@ -41,8 +40,6 @@ public class Menu : Control{
 				OS.Clipboard = (string)GetNode<Node2D>("/root/Main/Arena/Editor").Call("decodeArena");
 			}catch{
 				GD.Print("Problem in copy to clipboard");
-				CooldownGet = (ulong)OS.GetSystemTimeMsecs() + 1000;
-				return;
 			}
 			CooldownGet = (ulong)OS.GetSystemTimeMsecs() + 500;
 		}

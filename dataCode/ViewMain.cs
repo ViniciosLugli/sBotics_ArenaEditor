@@ -6,9 +6,6 @@ using System.Linq;
 public class ViewMain : Node2D{
 	public Vector2 CurrentPosition = new Vector2(0, 0);
 
-	string[] TopTiles = new string[]{"r8", "r9", "r10", "r11", "r12", "r13", "r14", "r15", "r16", "r17", "r39", "r41", "r43", "r45", "r49", "r52", "r55", "r58", "r61", "r64", "r67", "r69", "c12", "c13", "16", "c18", "c20", "r26", "r27", "r28", "r29", "r30", "r31", "r38", "r40", "r42", "r44", "r46", "r48", "r53", "r59", "r62", "r65", "r70"};
-	string[] ConjTiles = new string[]{"r54", "r55", "r66", "r67", "r19", "r20", "r21", "c19", "c20", "c21"};
-
 	public override void _Ready(){
 		GetNode<Sprite>("CurrestTileMark").Visible = true;
 		this.Position = (Vector2)GetNode<Node2D>("/root/Main/Arena/Editor").Call("getTilePos", (Vector2)CurrentPosition);
@@ -18,36 +15,8 @@ public class ViewMain : Node2D{
 	public void updateTileInfo(){
 		Sprite child = (Sprite)GetNode<Node2D>("/root/Main/Arena/Editor").GetNodeOrNull<Sprite>($"{CurrentPosition.x}0{CurrentPosition.y}0");
 		if(child != null){
-			string TileType = ((string)child.Get("Info")).Substring(4, 1).ToLower();
-			int TileId = (int)GetNode<Node2D>("/root/Main/Arena/Editor").Call("getIndex", (string)(((string)child.Get("Info")).Substring(5, 1)));
-			string TileBaseComparer = $"{TileType}{TileId}";
-			//Set name
-			if(TileType == "c"){
-				GetNode<Control>("Menu").GetNode<Label>("TileInfoLabel").Text =
-					$"{TileId}| {(string)GetNode<Node2D>("/root/Main/Arena/Editor").Call("getCurvedName", (int)TileId)}";
-			}else if(TileType == "r"){
-				GetNode<Control>("Menu").GetNode<Label>("TileInfoLabel").Text =
-					$"{TileId}| {(string)GetNode<Node2D>("/root/Main/Arena/Editor").Call("getStraightName", (int)TileId)}";
-			}else{
-				GetNode<Control>("Menu").GetNode<Label>("TileInfoLabel").Text = "-";
-			}
-
-			//Set color
-			if((TopTiles.Contains(TileBaseComparer)) && (ConjTiles.Contains(TileBaseComparer))){//METADINHA
-				GetNode<Control>("Menu").GetNode<Label>("TileInfoLabel").Set("custom_colors/font_color", new Color((0.450980f + 1f) / 2f, (0.388235f + 0.247059f) / 2f, (1f + 0.286275f) / 2f));
-			
-			}else if(TopTiles.Contains(TileBaseComparer)){//ELEVADO
-				GetNode<Control>("Menu").GetNode<Label>("TileInfoLabel").Set("custom_colors/font_color", new Color(0.450980f, 0.388235f, 1f));
-			
-			}else if(ConjTiles.Contains(TileBaseComparer)){//CONJUNTO
-				GetNode<Control>("Menu").GetNode<Label>("TileInfoLabel").Set("custom_colors/font_color", new Color(1f, 0.247059f, 0.286275f));
-			
-			}else if(TileBaseComparer == "r74"){//GANGORRA
-				GetNode<Control>("Menu").GetNode<Label>("TileInfoLabel").Set("custom_colors/font_color", new Color(0.490196f, 1f, 0.509804f));
-			
-			}else{//NENHUM
-				GetNode<Control>("Menu").GetNode<Label>("TileInfoLabel").Set("custom_colors/font_color", new Color(1f, 1f, 1f));
-			}
+			GetNode<Control>("Menu").GetNode<Label>("TileInfoLabel").Set("custom_colors/font_color", (Color)child.Get("Color"));
+			GetNode<Control>("Menu").GetNode<Label>("TileInfoLabel").Text = (string)child.Get("Name");
 		}else{
 			GetNode<Control>("Menu").GetNode<Label>("TileInfoLabel").Set("custom_colors/font_color", new Color(1f, 1f, 1f));
 			GetNode<Control>("Menu").GetNode<Label>("TileInfoLabel").Text = "-";

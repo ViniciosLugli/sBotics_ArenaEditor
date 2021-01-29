@@ -3,6 +3,16 @@ using System;
 
 public class TileScript : Sprite{
 	string Info = "";
+	string Name = "-";
+	Color Color = new Color(1f, 1f, 1f);
+	/*type:
+		0 = Normal
+		1 = Elevado
+		2 = Conjunto
+		3 = Elevado e Conjunto
+		4 = Gangorra	
+	*/
+
 	bool UpdateInfo = false;
 
 	public override void _Ready(){
@@ -18,7 +28,6 @@ public class TileScript : Sprite{
 	}
 	private void _on_TileBase_visibility_changed(){
 		if(this.Name.Contains("@")){
-			//GD.Print($"APAGADO {this.Name}");
 			this.CallDeferred("free");
 		}
 	}

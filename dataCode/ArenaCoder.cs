@@ -443,7 +443,6 @@ public class ArenaCoder : Node2D {
 	//bool NoisedTiles = false;
 	Tile CustomDat = new Tile(0, 0, 0, "null", 0);
 	Vector2 OffsetRescue =  new Vector2(0, 256);
-	string[] UnderLineTiles = new string[]{"r26", "r27", "r28", "r29", "r30", "r31", "r38", "r40", "r42", "r44", "r46", "r48", "r53", "r59", "r62", "r65", "r70"};
 	List<byte> endTiles = new List<byte>();
 	List<byte> straightList = new List<byte>();
 	List<byte> curvedList = new List<byte>();
@@ -451,7 +450,11 @@ public class ArenaCoder : Node2D {
 	byte maxValueCurved = 1;
 	//
 
-
+	//Pre-define variables for utils
+	string[] UnderLineTiles = new string[]{"r26", "r27", "r28", "r29", "r30", "r31", "r38", "r40", "r42", "r44", "r46", "r48", "r53", "r59", "r62", "r65", "r70"};
+	string[] TopTiles = new string[]{"r8", "r9", "r10", "r11", "r12", "r13", "r14", "r15", "r16", "r17", "r39", "r41", "r43", "r45", "r49", "r52", "r55", "r58", "r61", "r64", "r67", "r69", "c12", "c13", "16", "c18", "c20", "r26", "r27", "r28", "r29", "r30", "r31", "r38", "r40", "r42", "r44", "r46", "r48", "r53", "r59", "r62", "r65", "r70"};
+	string[] ConjTiles = new string[]{"r54", "r55", "r66", "r67", "r19", "r20", "r21", "c19", "c20", "c21"};
+	//
 
 	//Arena settings:
 	bool BoolEndCd = false; //FINALIZAR ROTINA NO FIM DO CÓDIGO
@@ -783,6 +786,7 @@ public class ArenaCoder : Node2D {
 	public void addTile(Tile CurrentTile, bool UpdateInfo){
 		if(CurrentTile.type == "null"){return;}
 		Vector2 TilePosition = getTilePos(new Vector2(CurrentTile.x, CurrentTile.y));
+		string TileBaseComparer = $"{CurrentTile.type}{CurrentTile.id}";
 		bool ComparePosition(string CurrentName){
 			byte pos_x = byte.Parse(reverse(CurrentName.Substring(0, 2)));
 			byte pos_y = byte.Parse(reverse(CurrentName.Substring(2, 2)));
@@ -806,9 +810,37 @@ public class ArenaCoder : Node2D {
 		CurrentChild.Set("Info",  (string)encode(CurrentTile));
 		CurrentChild.Set("UpdateInfo",  UpdateInfo);
 
+		//Visual text set #########################################################################################################################################################################################################################################################
+		//Set name
+		if(CurrentTile.type == "c"){
+			CurrentChild.Set("Name",  $"{CurrentTile.id}| {getCurvedName(CurrentTile.id)}");
+		}else if(CurrentTile.type == "r"){
+			CurrentChild.Set("Name",  $"{CurrentTile.id}| {getStraightName(CurrentTile.id)}");
+		}else{
+			CurrentChild.Set("Name",  "-");
+		}
+
+		//Set color
+		if((TopTiles.Contains(TileBaseComparer)) && (ConjTiles.Contains(TileBaseComparer))){//METADINHA
+			CurrentChild.Set("Color",  new Color((0.450980f + 1f) / 2f, (0.388235f + 0.247059f) / 2f, (1f + 0.286275f) / 2f));
+		
+		}else if(TopTiles.Contains(TileBaseComparer)){//ELEVADO
+			CurrentChild.Set("Color", new Color(0.450980f, 0.388235f, 1f));
+		
+		}else if(ConjTiles.Contains(TileBaseComparer)){//CONJUNTO
+			CurrentChild.Set("Color", new Color(1f, 0.247059f, 0.286275f));
+		
+		}else if(TileBaseComparer == "r74"){//GANGORRA
+			CurrentChild.Set("Color", new Color(0.490196f, 1f, 0.509804f));
+		
+		}else{//NENHUM
+			CurrentChild.Set("Color", new Color(1f, 1f, 1f));
+		}
+		//#########################################################################################################################################################################################################################################################################
+		
 		//Case underline tile:Child
-		if(UnderLineTiles.Contains($"{CurrentTile.type}{CurrentTile.id}")){
-			GD.Print($"Underline tile: {CurrentTile.type}{CurrentTile.id}");
+		if(UnderLineTiles.Contains(TileBaseComparer)){
+			GD.Print($"Underline tile: {TileBaseComparer}");
 			Sprite Filter_child = new Sprite();
 			Filter_child.Texture = (Texture)ResourceLoader.Load($"res://dataFile/2D assets/Complementares/Filtro_Azul_Linha.png");
 			Filter_child.ZIndex = 1;
@@ -890,273 +922,273 @@ public class ArenaCoder : Node2D {
 	}
 
 	public void regenerateArena(string arena_code){
-		resetArena();
+		//System.Threading.Tasks.Task CurrentArenaThread = System.Threading.Tasks.Task.Factory.StartNew(() => {
+			resetArena();
 
-		string[] final_code = filter(arena_code);
-		Tile CurrentTile;
-		PopNotification("", new Color("#ffffff"));
-		//GetNode<Node2D>("/root/Main/Arena/ViewMain").GetNode<Control>("Menu").GetNode<ProgressBar>("ProgressBar").Set("visible", true);
-		//GetNode<Node2D>("/root/Main/Arena/ViewMain").GetNode<Control>("Menu").GetNode<ProgressBar>("ProgressBar").Set("value", 0);
-		//float MedCount = 100f / (float)final_code.Count();
-		//float AcCount = 0f;
-		//GD.Print($"MedCount: {MedCount}");
-		foreach (string code in final_code){
-			//AcCount += MedCount;
-			//GetNode<Node2D>("/root/Main/Arena/ViewMain").GetNode<Control>("Menu").GetNode<ProgressBar>("ProgressBar").Set("value", MedCount);
-			if(code.Length > 9){
-				if((code.Substring(0, 10) != "Descricao:")){
-					code.Replace(" ", "");
-				}else{
-					Descricao = code.Substring(11);
-					continue;
-				}
-			}else{code.Replace(" ", "");}
-			if(code.Length == 9){//Normal tile
-				CurrentTile = decode(code);
-				if(filterFlags(CurrentTile)){continue;}
-				addTile(CurrentTile, false);
+			string[] final_code = filter(arena_code);
+			Tile CurrentTile;
+			PopNotification("", new Color("#ffffff"));
+			//GetNode<Node2D>("/root/Main/Arena/ViewMain").GetNode<Control>("Menu").GetNode<ProgressBar>("ProgressBar").Visible = true;
+			//GetNode<Node2D>("/root/Main/Arena/ViewMain").GetNode<Control>("Menu").GetNode<ProgressBar>("ProgressBar").Value = 0;
+			//float MedCount = 100f / (float)final_code.Count();
+			//GD.Print($"MedCount: {MedCount}");
+			foreach (string code in final_code){
+				//GetNode<Node2D>("/root/Main/Arena/ViewMain").GetNode<Control>("Menu").GetNode<ProgressBar>("ProgressBar").Value += MedCount;
+				if(code.Length > 9){
+					if((code.Substring(0, 10) != "Descricao:")){
+						code.Replace(" ", "");
+					}else{
+						Descricao = code.Substring(11);
+						continue;
+					}
+				}else{code.Replace(" ", "");}
+				if(code.Length == 9){//Normal tile
+					CurrentTile = decode(code);
+					if(filterFlags(CurrentTile)){continue;}
+					addTile(CurrentTile, false);
 
-			}else if(code.Length == 1){//Probaly config code
-				try{
-					RescueTyp = byte.Parse(code);
-				}catch{
-					GD.Print($"Cant Parse {code} to byte!");
-				}
+				}else if(code.Length == 1){//Probaly config code
+					try{
+						RescueTyp = byte.Parse(code);
+					}catch{
+						GD.Print($"Cant Parse {code} to byte!");
+					}
 
-			}else if(code.Length > 9){//Probaly config code
-				try{
-					switch (code.Substring(0, 10)){
-						case "BoolEndCd:":
-							if(code.Substring(10) == "false"){
-								BoolEndCd = false;
+				}else if(code.Length > 9){//Probaly config code
+					try{
+						switch (code.Substring(0, 10)){
+							case "BoolEndCd:":
+								if(code.Substring(10) == "false"){
+									BoolEndCd = false;
+									break;
+								}
+								BoolEndCd = true;
 								break;
-							}
-							BoolEndCd = true;
-							break;
-						case "BoolNoPos:":
-							if(code.Substring(10) == "false"){
-								BoolNoPos = false;
+							case "BoolNoPos:":
+								if(code.Substring(10) == "false"){
+									BoolNoPos = false;
+									break;
+								}
+								BoolNoPos = true;
 								break;
-							}
-							BoolNoPos = true;
-							break;
-						case "BoolPrgso:":
-							if(code.Substring(10) == "false"){
-								BoolPrgso = false;
+							case "BoolPrgso:":
+								if(code.Substring(10) == "false"){
+									BoolPrgso = false;
+									break;
+								}
+								BoolPrgso = true;
 								break;
-							}
-							BoolPrgso = true;
-							break;
-						case "BoolShowM:":
-							if(code.Substring(10) == "false"){
-								BoolShowM = false;
+							case "BoolShowM:":
+								if(code.Substring(10) == "false"){
+									BoolShowM = false;
+									break;
+								}
+								BoolShowM = true;
 								break;
-							}
-							BoolShowM = true;
-							break;
-						case "BoolSlnha:":
-							if(code.Substring(10) == "false"){
-								BoolSlnha = false;
+							case "BoolSlnha:":
+								if(code.Substring(10) == "false"){
+									BoolSlnha = false;
+									break;
+								}
+								BoolSlnha = true;
 								break;
-							}
-							BoolSlnha = true;
-							break;
-						case "BoolTSala:":
-							BoolTSala = code.Substring(10) == "2";
-							break;
-						case "BoolTpFim:":
-							if(code.Substring(10) == "false"){
-								BoolTpFim = false;
+							case "BoolTSala:":
+								BoolTSala = code.Substring(10) == "2";
 								break;
-							}
-							BoolTpFim = true;
-							break;
-						case "HoraDoDia:":
-							string hcode = code.Replace(" ", "");
-							string[] HorarioArray = hcode.Substring(10).Split(':');
-							if (hcode.Substring(10) == HorarioArray[0]){
-								HoraDoDia = new string[]{"12", "00"};
+							case "BoolTpFim:":
+								if(code.Substring(10) == "false"){
+									BoolTpFim = false;
+									break;
+								}
+								BoolTpFim = true;
 								break;
-							}
-							HorarioArray[0] = short.Parse(HorarioArray[0]).ToString("00");
-							HorarioArray[1] = short.Parse(HorarioArray[1]).ToString("00");
-							HoraDoDia = HorarioArray;
-							break;
-						case "Imagem001:":
-							reserve(code);
-							break;
-						case "Imagem021:":
-							reserve(code);
-							break;
-						case "Imagem022:":
-							reserve(code);
-							break;
-						case "Imagem023:":
-							reserve(code);
-							break;
-						case "Imagem024:":
-							reserve(code);
-							break;
-						case "Imagem031:":
-							reserve(code);
-							break;
-						case "Imagem032:":
-							reserve(code);
-							break;
-						case "Imagem101:":
-							reserve(code);
-							break;
-						case "Imagem102:":
-							reserve(code);
-							break;
-						case "Imagem103:":
-							reserve(code);
-							break;
-						case "Imagem104:":
-							reserve(code);
-							break;
-						case "Imagem105:":
-							reserve(code);
-							break;
-						case "Imagem106:":
-							reserve(code);
-							break;
-						case "Imagem107:":
-							reserve(code);
-							break;
-						case "Imagem108:":
-							reserve(code);
-							break;
-						case "Imagem109:":
-							reserve(code);
-							break;
-						case "Imagem110:":
-							reserve(code);
-							break;;
-						case "Imagem111:":
-							reserve(code);
-							break;
-						case "Imagem112:":
-							reserve(code);
-							break;
-						case "Imagem113:":
-							reserve(code);
-							break;
-						case "Imagem114:":
-							reserve(code);
-							break;
-						case "Imagem115:":
-							reserve(code);
-							break;
-						case "Imagem116:":
-							reserve(code);
-							break;
-						case "Imagem117:":
-							reserve(code);
-							break;
-						case "Imagem118:":
-							reserve(code);
-							break;
-		
-						case "MarcadorF:":
-							reserve(code);
-							break;;
-						case "MarcadorP:":
-							reserve(code);
-							break;
-						case "MoveObsto:":
-							MoveObsto = !(code.Substring(10) == "false");
-							break;
-						case "ObstacTmp:":
-							ObstacTmp = short.Parse(code.Substring(10));
-							break;
-						case "PontoDist:":
-							PontoDist = !(code.Substring(10) == "false");
-							break;
-						case "ResgtePos:":
-							ResgtePos = short.Parse(code.Substring(10));
-							break;
-						case "RobosPerm:":
-							if (code.Substring(10).Length == 6 && code.Substring(10) != "000000"){
-								RobosPerm = code.Substring(10);
+							case "HoraDoDia:":
+								string hcode = code.Replace(" ", "");
+								string[] HorarioArray = hcode.Substring(10).Split(':');
+								if (hcode.Substring(10) == HorarioArray[0]){
+									HoraDoDia = new string[]{"12", "00"};
+									break;
+								}
+								HorarioArray[0] = short.Parse(HorarioArray[0]).ToString("00");
+								HorarioArray[1] = short.Parse(HorarioArray[1]).ToString("00");
+								HoraDoDia = HorarioArray;
 								break;
-							}
-							RobosPerm = "111111";
-							break;
-						case "SaveMrcds:":
-							SaveMrcds = short.Parse(code.Substring(10));
-							break;
-						case "TempoMxmo:":
-						  switch (int.Parse(code.Substring(10))){
-							case 0:
-							  TempoMxmo = 0;
+							case "Imagem001:":
+								reserve(code);
+								break;
+							case "Imagem021:":
+								reserve(code);
+								break;
+							case "Imagem022:":
+								reserve(code);
+								break;
+							case "Imagem023:":
+								reserve(code);
+								break;
+							case "Imagem024:":
+								reserve(code);
+								break;
+							case "Imagem031:":
+								reserve(code);
+								break;
+							case "Imagem032:":
+								reserve(code);
+								break;
+							case "Imagem101:":
+								reserve(code);
+								break;
+							case "Imagem102:":
+								reserve(code);
+								break;
+							case "Imagem103:":
+								reserve(code);
+								break;
+							case "Imagem104:":
+								reserve(code);
+								break;
+							case "Imagem105:":
+								reserve(code);
+								break;
+							case "Imagem106:":
+								reserve(code);
+								break;
+							case "Imagem107:":
+								reserve(code);
+								break;
+							case "Imagem108:":
+								reserve(code);
+								break;
+							case "Imagem109:":
+								reserve(code);
+								break;
+							case "Imagem110:":
+								reserve(code);
+								break;;
+							case "Imagem111:":
+								reserve(code);
+								break;
+							case "Imagem112:":
+								reserve(code);
+								break;
+							case "Imagem113:":
+								reserve(code);
+								break;
+							case "Imagem114:":
+								reserve(code);
+								break;
+							case "Imagem115:":
+								reserve(code);
+								break;
+							case "Imagem116:":
+								reserve(code);
+								break;
+							case "Imagem117:":
+								reserve(code);
+								break;
+							case "Imagem118:":
+								reserve(code);
+								break;
+			
+							case "MarcadorF:":
+								reserve(code);
+								break;;
+							case "MarcadorP:":
+								reserve(code);
+								break;
+							case "MoveObsto:":
+								MoveObsto = !(code.Substring(10) == "false");
+								break;
+							case "ObstacTmp:":
+								ObstacTmp = short.Parse(code.Substring(10));
+								break;
+							case "PontoDist:":
+								PontoDist = !(code.Substring(10) == "false");
+								break;
+							case "ResgtePos:":
+								ResgtePos = short.Parse(code.Substring(10));
+								break;
+							case "RobosPerm:":
+								if (code.Substring(10).Length == 6 && code.Substring(10) != "000000"){
+									RobosPerm = code.Substring(10);
+									break;
+								}
+								RobosPerm = "111111";
+								break;
+							case "SaveMrcds:":
+								SaveMrcds = short.Parse(code.Substring(10));
+								break;
+							case "TempoMxmo:":
+							  switch (int.Parse(code.Substring(10))){
+								case 0:
+								  TempoMxmo = 0;
+								  break;
+								case 1:
+								  TempoMxmo = 1;
+								  break;
+								case 2:
+								  TempoMxmo = 2;
+								  break;
+								case 4:
+								  TempoMxmo = 4;
+								  break;
+								case 5:
+								  TempoMxmo = 5;
+								  break;
+								case 6:
+								  TempoMxmo = 6;
+								  break;
+								default:
+								  TempoMxmo = 3;
+								  break;
+							  }
 							  break;
-							case 1:
-							  TempoMxmo = 1;
+							case "VelaAcesa:":
+								reserve(code);
+								break;
+							case "VelaApgda:":
+								reserve(code);
+								break;
+							case "VitimOrta:":
+								reserve(code);
+								break;
+							case "VitimViva:":
+								reserve(code);
+								break;
+							case "VitmaPnts:":
+								VitmaPnts = !(code.Substring(10) == "false");
+								break;
+							case "VtmsMrtas:":
+								VtmsMrtas = short.Parse(code.Substring(10));
+								if (VtmsMrtas > 10 || VtmsMrtas < 0){
+									VtmsMrtas = 0;
+								}
 							  break;
-							case 2:
-							  TempoMxmo = 2;
+							case "VtmsVivas:":
+								VtmsVivas = short.Parse(code.Substring(10));
+								if (VtmsVivas > 10 || VtmsVivas < 0){
+									VtmsVivas = 0;
+								}
 							  break;
-							case 4:
-							  TempoMxmo = 4;
-							  break;
-							case 5:
-							  TempoMxmo = 5;
-							  break;
-							case 6:
-							  TempoMxmo = 6;
-							  break;
+							case "prfsrCubo:":
+								reserve(code);
+								break;
 							default:
-							  TempoMxmo = 3;
-							  break;
-						  }
-						  break;
-						case "VelaAcesa:":
-							reserve(code);
-							break;
-						case "VelaApgda:":
-							reserve(code);
-							break;
-						case "VitimOrta:":
-							reserve(code);
-							break;
-						case "VitimViva:":
-							reserve(code);
-							break;
-						case "VitmaPnts:":
-							VitmaPnts = !(code.Substring(10) == "false");
-							break;
-						case "VtmsMrtas:":
-							VtmsMrtas = short.Parse(code.Substring(10));
-							if (VtmsMrtas > 10 || VtmsMrtas < 0){
-								VtmsMrtas = 0;
-							}
-						  break;
-						case "VtmsVivas:":
-							VtmsVivas = short.Parse(code.Substring(10));
-							if (VtmsVivas > 10 || VtmsVivas < 0){
-								VtmsVivas = 0;
-							}
-						  break;
-						case "prfsrCubo:":
-							reserve(code);
-							break;
-						default:
-							GD.Print($"No values for {code}");
-							//return false;
-							break;
-				  	}
-				}catch (Exception ex){
-					GD.Print($"Error on load switch code: {code}, with exception: {ex.Message}");
-					PopNotification("Não foi possível importar a arena", new Color(0.8f, 0, 0));
+								GD.Print($"No values for {code}");
+								//return false;
+								break;
+					  	}
+					}catch (Exception ex){
+						GD.Print($"Error on load switch code: {code}, with exception: {ex.Message}");
+						PopNotification("Não foi possível importar a arena", new Color(0.8f, 0, 0));
+					}
 				}
 			}
-		}
-		//GetNode<Node2D>("/root/Main/Arena/ViewMain").GetNode<Control>("Menu").GetNode<ProgressBar>("ProgressBar").Set("visible", false);
-		//GetNode<Node2D>("/root/Main/Arena/ViewMain").GetNode<Control>("Menu").GetNode<ProgressBar>("ProgressBar").Set("value", 0);
-		loadFlags();
-		updateInfoMenu();
-		PopNotification("Arena importada com sucesso", new Color(0, 0.8f, 0));
+			//GetNode<Node2D>("/root/Main/Arena/ViewMain").GetNode<Control>("Menu").GetNode<ProgressBar>("ProgressBar").Visible = false;
+			//GetNode<Node2D>("/root/Main/Arena/ViewMain").GetNode<Control>("Menu").GetNode<ProgressBar>("ProgressBar").Value = 0;
+			loadFlags();
+			updateInfoMenu();
+			PopNotification("Arena importada com sucesso", new Color(0, 0.8f, 0));
+		//});
 	}
 
 	private void preLoad(){
