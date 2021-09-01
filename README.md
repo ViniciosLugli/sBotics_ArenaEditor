@@ -1,2 +1,2 @@
 # sBotics_ArenaEditor
-Editor de arenas externa para o sBotics :)
+Editor de arenas externo para o sBotics :)
